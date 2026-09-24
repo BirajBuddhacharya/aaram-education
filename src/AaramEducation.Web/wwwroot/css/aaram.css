@@ -263,3 +263,7 @@ a:hover { color: var(--aaram-primary-dark); }
   .container, .container-fluid { padding-left: 16px; padding-right: 16px; }
   .auth-card { margin: 1.5rem auto; padding: 1.5rem; }
 }
+
+/* Lesson player */
+.video-wrapper { background: #000; border-radius: var(--aaram-radius); overflow: hidden; }
+.lesson-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; }

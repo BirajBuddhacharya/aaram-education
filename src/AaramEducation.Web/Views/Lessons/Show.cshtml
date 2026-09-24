@@ -1,0 +1,141 @@
+@model AaramEducation.Web.Models.ViewModels.Lessons.LessonViewModel
+@{
+    ViewData["Title"] = Model.Lesson.LessonTitle;
+    ViewBag.Breadcrumbs = new[] {
+        ("Courses", Url.Action("Index", "Courses")),
+        (Model.CourseName, Url.Action("Details", "Courses", new { id = Model.CourseId })),
+        (Model.ModuleName, (string?)null),
+        (Model.Lesson.LessonTitle, (string?)null),
+    };
+}
+
+@functions {
+    static string ExtractYouTubeId(string url)
+    {
+        try
+        {
+            var uri = new Uri(url);
+            var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            return query["v"] ?? uri.Segments.LastOrDefault()?.TrimEnd('/') ?? "";
+        }
+        catch { return ""; }
+    }
+}
+
+<div class="container-fluid py-3">
+  <div class="row g-4">
+
+    <div class="col-lg-8">
+      <partial name="_Breadcrumb" />
+
+      <h1 class="lesson-title">@Model.Lesson.LessonTitle</h1>
+      @if (!string.IsNullOrWhiteSpace(Model.Lesson.LessonDescription))
+      {
+        <p class="text-muted">@Model.Lesson.LessonDescription</p>
+      }
+
+      @if (Model.Video is not null)
+      {
+        <div class="video-wrapper mb-4" id="video-container"
+             data-lesson-id="@Model.Lesson.LessonId"
+             data-resume="@Model.ResumePositionSeconds">
+          @if (Model.Video.VideoUrl.Contains("youtube.com") || Model.Video.VideoUrl.Contains("youtu.be"))
+          {
+            var ytId = ExtractYouTubeId(Model.Video.VideoUrl);
+            <div class="ratio ratio-16x9">
+              <iframe src="https://www.youtube.com/embed/@ytId?enablejsapi=1"
+                      title="@Model.Video.VideoTitle" allowfullscreen class="rounded"></iframe>
+            </div>
+          }
+          else
+          {
+            <video id="lesson-video" class="w-100 rounded" controls>
+              <source src="@Model.Video.VideoUrl" type="video/mp4" />
+              Your browser does not support HTML5 video.
+            </video>
+          }
+          <p class="text-muted small mt-1">@Model.Video.VideoTitle</p>
+        </div>
+      }
+
+      @if (User.Identity?.IsAuthenticated == true && Model.LessonStatus != AaramEducation.Core.Enums.ProgressStatus.Completed)
+      {
+        <form asp-action="Complete" asp-controller="Lessons" method="post" class="mb-4">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="lessonId" value="@Model.Lesson.LessonId" />
+          <button type="submit" class="btn btn-success">&#10003; Mark as Complete</button>
+        </form>
+      }
+      @if (Model.LessonStatus == AaramEducation.Core.Enums.ProgressStatus.Completed)
+      {
+        <div class="alert alert-success py-2 mb-4">Lesson completed!</div>
+      }
+
+      @if (Model.StudyNotes.Any())
+      {
+        <section class="mb-4">
+          <h5>Study Materials</h5>
+          <ul class="list-group list-group-flush">
+            @foreach (var note in Model.StudyNotes)
+            {
+              <li class="list-group-item px-0">
+                <strong>@note.NoteTitle</strong>
+                @if (!string.IsNullOrWhiteSpace(note.NoteContent))
+                {
+                  <p class="mb-1 text-muted small">@note.NoteContent</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(note.FileUrl))
+                {
+                  <a href="@note.FileUrl" class="btn btn-sm btn-outline-secondary" download>Download</a>
+                }
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      @if (Model.Quizzes.Any())
+      {
+        <section class="mb-4">
+          <h5>Quizzes</h5>
+          <div class="list-group">
+            @foreach (var quiz in Model.Quizzes)
+            {
+              <a asp-controller="Quiz" asp-action="Start" asp-route-quizId="@quiz.QuizId"
+                 class="list-group-item list-group-item-action">
+                @quiz.QuizTitle
+                <span class="badge bg-secondary float-end">@quiz.MaxAttempts attempts</span>
+              </a>
+            }
+          </div>
+        </section>
+      }
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card sticky-top" style="top:80px">
+        <div class="card-header fw-semibold">Lesson Navigation</div>
+        <div class="card-body d-flex flex-column gap-2">
+          @if (Model.PrevLessonId.HasValue)
+          {
+            <a asp-action="Show" asp-route-id="@Model.PrevLessonId" class="btn btn-outline-secondary w-100">&#8592; Previous</a>
+          }
+          @if (Model.NextLessonId.HasValue)
+          {
+            <a asp-action="Show" asp-route-id="@Model.NextLessonId" class="btn btn-primary w-100">Next &#8594;</a>
+          }
+          <a asp-controller="Courses" asp-action="Details" asp-route-id="@Model.CourseId"
+             class="btn btn-link w-100">Back to Course</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+@section Scripts {
+  <script src="~/js/lesson-player.js"></script>
+  <script>
+    window.aaramAntiForgeryToken = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
+  </script>
+}

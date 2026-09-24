@@ -52,7 +52,7 @@
                       }
                       else
                       {
-                        <a asp-controller="Lessons" asp-action="View" asp-route-id="@lesson.LessonId">@lesson.LessonTitle</a>
+                        <a asp-controller="Lessons" asp-action="Show" asp-route-id="@lesson.LessonId">@lesson.LessonTitle</a>
                       }
                       @if (lesson.IsFreeSample)
                       {
