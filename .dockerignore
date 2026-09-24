@@ -1,0 +1,33 @@
+# Build artifacts — rebuilt inside the image, and stale bin/obj here would
+# poison COPY layers and break the SDK's own restore/build cache.
+**/bin/
+**/obj/
+**/.vs/
+**/.idea/
+*.user
+
+# Runtime/secrets — never bake into the image; compose injects these instead.
+.env
+**/wwwroot/uploads/
+
+# VCS / CI
+.git/
+.github/
+
+# Docs, design source files, and other large non-build assets — keep the
+# build context (and cache invalidation) tied to source, not documents.
+docs/
+design/
+*.md
+*.docx
+*.zip
+Aaram Education.html
+
+# Tests aren't part of the runtime image
+tests/
+src/AaramEducation.Tests/
+
+# Docker/editor files themselves
+Dockerfile
+docker-compose*.yml
+.dockerignore

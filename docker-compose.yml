@@ -1,0 +1,20 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - path: .env
+        required: false 
+    environment:
+      DB_HOST: ${DB_HOST:-host.docker.internal}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "5287:8080"
+    volumes:
+      - uploads:/app/wwwroot/uploads
+
+volumes:
+  uploads:
