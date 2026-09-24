@@ -62,7 +62,6 @@ public class ProgressRepository(ApplicationDbContext db) : IProgressRepository
         var lesson = await db.Lessons
             .Include(l => l.Module).ThenInclude(m => m.Lessons)
             .Include(l => l.Module).ThenInclude(m => m.Course).ThenInclude(c => c.Modules).ThenInclude(m => m.Lessons)
-            .AsNoTracking()
             .FirstOrDefaultAsync(l => l.LessonId == lessonId);
 
         if (lesson is null) return;

@@ -25,6 +25,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Badge> Badges => Set<Badge>();
     public DbSet<UserBadge> UserBadges => Set<UserBadge>();
     public DbSet<DailyActivityLog> DailyActivityLogs => Set<DailyActivityLog>();
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
@@ -272,6 +273,19 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
              .WithMany(u => u.DailyActivityLogs)
              .HasForeignKey(d => d.UserId)
              .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ── NOTIFICATION ──────────────────────────────────────────────────
+        mb.Entity<Notification>(e =>
+        {
+            e.HasKey(n => n.NotificationId);
+            e.Property(n => n.Title).HasMaxLength(200).IsRequired();
+            e.Property(n => n.Message).HasMaxLength(1000).IsRequired();
+            e.HasOne(n => n.User)
+             .WithMany()
+             .HasForeignKey(n => n.UserId)
+             .OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(n => new { n.UserId, n.IsRead });
         });
     }
 }

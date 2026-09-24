@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Encodings.Web;
 using AaramEducation.Core.Entities;
 using AaramEducation.Core.Enums;
 using AaramEducation.Core.Interfaces;
@@ -55,9 +56,9 @@ public class GuestbookController(IGuestbookRepository guestbook) : Controller
 
         await guestbook.SubmitAsync(new GuestbookEntry
         {
-            GuestName = vm.GuestName,
+            GuestName = HtmlEncoder.Default.Encode(vm.GuestName),
             GuestEmail = vm.GuestEmail,
-            Message = vm.Message,
+            Message = HtmlEncoder.Default.Encode(vm.Message),
             SubmittedAt = DateTime.UtcNow,
             ModerationStatus = ModerationStatus.Pending,
         });
