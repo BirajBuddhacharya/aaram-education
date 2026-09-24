@@ -1,0 +1,34 @@
+@model AaramEducation.Web.Models.ViewModels.Gamification.LeaderboardViewModel
+@{ ViewData["Title"] = "Leaderboard"; }
+
+<div class="container py-4" style="max-width:700px">
+  <h1 class="mb-4">Leaderboard</h1>
+
+  @if (Model.CurrentUserRank.HasValue)
+  {
+    <div class="alert alert-info">Your rank: <strong>#@Model.CurrentUserRank</strong></div>
+  }
+
+  <div class="list-group">
+    @{ int rank = 0; }
+    @foreach (var entry in Model.Entries)
+    {
+      rank++;
+      var myIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+      var isCurrent = myIdStr == entry.User.UserId.ToString();
+      <div class="list-group-item d-flex align-items-center gap-3 @(isCurrent ? "bg-light fw-bold" : "")">
+        <span class="@(rank <= 3 ? "text-warning fw-bold" : "text-muted")" style="width:2rem;text-align:center">
+          @(rank == 1 ? "🥇" : rank == 2 ? "🥈" : rank == 3 ? "🥉" : $"#{rank}")
+        </span>
+        <img src="@(entry.User.ProfilePicture ?? "/img/avatar-default.svg")"
+             alt="" width="36" height="36" class="rounded-circle" style="object-fit:cover" />
+        <span class="flex-grow-1">@entry.User.FirstName @entry.User.LastName</span>
+        <span class="badge bg-warning text-dark">@entry.XpPoints XP</span>
+      </div>
+    }
+    @if (!Model.Entries.Any())
+    {
+      <div class="list-group-item text-muted text-center py-4">No students on the leaderboard yet.</div>
+    }
+  </div>
+</div>

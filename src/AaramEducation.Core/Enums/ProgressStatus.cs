@@ -1,9 +1,8 @@
-namespace AaramEducation.Core.Enums
+namespace AaramEducation.Core.Enums;
+
+public enum ProgressStatus
 {
-    public enum ProgressStatus
-    {
-        NotStarted,
-        InProgress,
-        Completed
-    }
+    NotStarted,
+    InProgress,
+    Completed
 }

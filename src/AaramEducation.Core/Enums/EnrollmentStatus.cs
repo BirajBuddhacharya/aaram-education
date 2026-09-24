@@ -1,9 +1,8 @@
-namespace AaramEducation.Core.Enums
+namespace AaramEducation.Core.Enums;
+
+public enum EnrollmentStatus
 {
-    public enum EnrollmentStatus
-    {
-        Active,
-        Completed,
-        Dropped
-    }
+    Active,
+    Completed,
+    Dropped
 }

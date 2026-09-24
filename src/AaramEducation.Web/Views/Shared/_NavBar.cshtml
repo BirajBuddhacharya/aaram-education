@@ -1,0 +1,96 @@
+@using System.Security.Claims
+@{
+  var ctrl = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+  var act  = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+  string On(string c) => ctrl == c ? "active" : "";
+}
+<nav class="navbar navbar-expand-lg navbar-aaram">
+  <div class="container">
+    <a class="aaram-brand" asp-controller="Home" asp-action="Index">
+      <span class="aaram-brand-name">aaram</span>
+      <span class="aaram-brand-dot" aria-hidden="true"></span>
+    </a>
+
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navMain"
+            aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav ms-4 me-auto align-items-lg-center">
+        <li class="nav-item">
+          <a class="nav-link @On("Courses")" asp-controller="Courses" asp-action="Index">Courses</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link @On("Badges")" asp-controller="Badges" asp-action="Leaderboard">Leaderboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link @On("Guestbook")" asp-controller="Guestbook" asp-action="Index">Guest book</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav align-items-lg-center gap-2">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+          var role = User.FindFirstValue(ClaimTypes.Role) ?? "Student";
+          var firstName = User.FindFirstValue(ClaimTypes.GivenName) ?? "";
+          var lastName  = User.FindFirstValue(ClaimTypes.Surname) ?? "";
+          var email     = User.FindFirstValue(ClaimTypes.Email) ?? "me";
+          var initials  = (!string.IsNullOrWhiteSpace(firstName) && !string.IsNullOrWhiteSpace(lastName))
+                            ? $"{firstName[0]}{lastName[0]}"
+                            : email[..Math.Min(2, email.Length)];
+          var displayName = !string.IsNullOrWhiteSpace(firstName) ? firstName : email;
+
+          @if (role == "Admin")
+          {
+            <li class="nav-item"><a class="nav-link @On("Admin")" asp-controller="Admin" asp-action="Dashboard">Admin</a></li>
+          }
+          else if (role == "Tutor")
+          {
+            <li class="nav-item"><a class="nav-link @On("Tutor")" asp-controller="Tutor" asp-action="Dashboard">My courses</a></li>
+          }
+          else
+          {
+            <li class="nav-item"><a class="nav-link @(ctrl == "Courses" && act == "MyEnrollments" ? "active" : "")" asp-controller="Courses" asp-action="MyEnrollments">My courses</a></li>
+          }
+
+          @await Component.InvokeAsync("NavbarNotifications")
+
+          <li class="nav-item dropdown">
+            <a class="user-pill" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="user-avatar">@initials.ToUpper()</span>
+              <span>@displayName</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <span class="dropdown-item-text" style="font-size:.8rem">
+                  <span class="role-badge @role.ToLower()">@role</span>
+                </span>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li><a class="dropdown-item" asp-controller="Progress" asp-action="Dashboard">My dashboard</a></li>
+              <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">My profile</a></li>
+              <li><a class="dropdown-item" asp-controller="Badges" asp-action="Index">My badges</a></li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                  @Html.AntiForgeryToken()
+                  <button type="submit" class="dropdown-item">Sign out</button>
+                </form>
+              </li>
+            </ul>
+          </li>
+        }
+        else
+        {
+          <li class="nav-item">
+            <a class="nav-link" asp-controller="Account" asp-action="Login">Sign in</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn-aaram btn-aaram-primary btn-aaram-sm" asp-controller="Account" asp-action="Register">Join free</a>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</nav>

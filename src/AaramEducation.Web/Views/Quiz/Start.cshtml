@@ -1,0 +1,58 @@
+@model QuizStartViewModel
+@{ ViewData["Title"] = Model.Quiz.QuizTitle; }
+
+<div class="container py-4" style="max-width:720px">
+  <h1 class="mb-1">@Model.Quiz.QuizTitle</h1>
+  @if (!string.IsNullOrWhiteSpace(Model.Quiz.QuizDescription))
+  {
+    <p class="text-muted">@Model.Quiz.QuizDescription</p>
+  }
+
+  <div class="d-flex gap-3 mb-4">
+    <span class="badge bg-secondary fs-6">Passing: @Model.Quiz.PassingScore%</span>
+    <span class="badge bg-secondary fs-6">Attempts: @Model.AttemptsUsed / @Model.Quiz.MaxAttempts</span>
+  </div>
+
+  @if (Model.CanAttempt)
+  {
+    <form asp-action="Start" asp-route-quizId="@Model.Quiz.QuizId" method="post" class="mb-4">
+      @Html.AntiForgeryToken()
+      <button type="submit" class="btn btn-primary">Begin Quiz</button>
+    </form>
+  }
+  else
+  {
+    <div class="alert alert-warning">Maximum attempts reached. No more attempts allowed.</div>
+  }
+
+  @if (Model.PastAttempts.Any())
+  {
+    <h5 class="mt-4">Past Attempts</h5>
+    <table class="table table-sm">
+      <thead><tr><th>#</th><th>Date</th><th>Score</th><th>Result</th><th></th></tr></thead>
+      <tbody>
+        @{ int n = 1; }
+        @foreach (var a in Model.PastAttempts)
+        {
+          bool passed = a.ScoreAchieved >= Model.Quiz.PassingScore;
+          <tr>
+            <td>@n++</td>
+            <td>@a.AttemptDate.ToLocalTime().ToString("dd MMM yyyy HH:mm")</td>
+            <td>@a.ScoreAchieved%</td>
+            <td>
+              @if (passed)
+              {
+                <span class="badge bg-success">Pass</span>
+              }
+              else
+              {
+                <span class="badge bg-danger">Fail</span>
+              }
+            </td>
+            <td><a asp-action="Results" asp-route-attemptId="@a.AttemptId" class="btn btn-sm btn-outline-secondary">View</a></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

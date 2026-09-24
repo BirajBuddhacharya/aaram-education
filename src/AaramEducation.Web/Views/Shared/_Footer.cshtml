@@ -1,0 +1,36 @@
+<footer class="footer-aaram">
+  <div class="container">
+    <div class="row gy-4">
+      <div class="col-lg-5">
+        <div class="footer-brand">
+          aaram<span class="aaram-brand-dot" aria-hidden="true"></span>
+        </div>
+        <p class="footer-tagline mb-0">
+          Unhurried learning for school, college and anyone coming back to the basics.
+        </p>
+      </div>
+
+      <div class="col-6 col-lg-3 offset-lg-1">
+        <div class="footer-head">Learn</div>
+        <nav class="d-flex flex-column align-items-start">
+          <a asp-controller="Courses" asp-action="Index">Courses</a>
+          <a asp-controller="Courses" asp-action="MyEnrollments">My courses</a>
+          <a asp-controller="Progress" asp-action="Dashboard">My dashboard</a>
+        </nav>
+      </div>
+
+      <div class="col-6 col-lg-3">
+        <div class="footer-head">Community</div>
+        <nav class="d-flex flex-column align-items-start">
+          <a asp-controller="Guestbook" asp-action="Index">Guest book</a>
+          <a asp-controller="Account" asp-action="Register">Teach on Aaram</a>
+          <a asp-controller="Badges" asp-action="Leaderboard">Leaderboard</a>
+        </nav>
+      </div>
+    </div>
+
+    <div class="footer-rule">
+      <span class="footer-copy">&copy; @DateTime.Now.Year Aaram Education, Techspire College</span>
+    </div>
+  </div>
+</footer>

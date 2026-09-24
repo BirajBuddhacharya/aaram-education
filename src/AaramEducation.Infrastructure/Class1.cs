@@ -1,6 +1,6 @@
-namespace AaramEducation.Infrastructure
+﻿namespace AaramEducation.Infrastructure;
+
+public class Class1
 {
-    public class Class1
-    {
-    }
+
 }

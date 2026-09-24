@@ -1,82 +1,64 @@
-using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Threading.Tasks;
 using AaramEducation.Core.Entities;
-using AaramEducation.Core.Enums;
 using AaramEducation.Core.Interfaces;
 using AaramEducation.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
-namespace AaramEducation.Infrastructure.Repositories
+namespace AaramEducation.Infrastructure.Repositories;
+
+public class BadgeRepository(ApplicationDbContext db) : IBadgeRepository
 {
-    public class BadgeRepository : IBadgeRepository
+    public async Task<IEnumerable<Badge>> GetAllAsync() =>
+        await db.Badges.AsNoTracking().OrderBy(b => b.TargetValue).ToListAsync();
+
+    public async Task<IEnumerable<UserBadge>> GetUserBadgesAsync(int userId) =>
+        await db.UserBadges.AsNoTracking()
+            .Include(ub => ub.Badge)
+            .Where(ub => ub.UserId == userId)
+            .OrderByDescending(ub => ub.EarnedAt)
+            .ToListAsync();
+
+    public async Task CheckAndAwardAsync(int userId)
     {
-        private readonly ApplicationDbContext _db;
-        public BadgeRepository(ApplicationDbContext db) { _db = db; }
+        var badges = await db.Badges.AsNoTracking().ToListAsync();
+        var earnedBadgeIds = await db.UserBadges
+            .Where(ub => ub.UserId == userId)
+            .Select(ub => ub.BadgeId)
+            .ToListAsync();
 
-        public async Task<IEnumerable<Badge>> GetAllAsync() =>
-            await _db.Badges.AsNoTracking().OrderBy(b => b.TargetValue).ToListAsync();
+        var user = await db.Users.FindAsync(userId);
+        if (user is null) return;
 
-        public async Task<IEnumerable<UserBadge>> GetUserBadgesAsync(int userId) =>
-            await _db.UserBadges.AsNoTracking()
-                .Include(ub => ub.Badge)
-                .Where(ub => ub.UserId == userId)
-                .OrderByDescending(ub => ub.EarnedAt)
-                .ToListAsync();
+        var now = DateTime.UtcNow;
 
-        public async Task CheckAndAwardAsync(int userId)
+        foreach (var badge in badges)
         {
-            var badges = await _db.Badges.AsNoTracking().ToListAsync();
-            var earnedBadgeIds = await _db.UserBadges
-                .Where(ub => ub.UserId == userId)
-                .Select(ub => ub.BadgeId)
-                .ToListAsync();
+            if (earnedBadgeIds.Contains(badge.BadgeId)) continue;
 
-            var user = await _db.Users.FindAsync(userId);
-            if (user is null) return;
-
-            var now = DateTime.UtcNow;
-
-            foreach (var badge in badges)
+            int currentValue = badge.TargetType switch
             {
-                if (earnedBadgeIds.Contains(badge.BadgeId)) continue;
+                "lessons_completed" => await db.LessonProgresses
+                    .CountAsync(lp => lp.StudentId == userId &&
+                                      lp.Status == Core.Enums.ProgressStatus.Completed),
+                "quizzes_passed" => await db.QuizAttempts
+                    .CountAsync(a => a.StudentId == userId && a.ScoreAchieved >= 60),
+                "streak_days"       => user.CurrentStreakDays,
+                "courses_completed" => await db.CourseProgresses
+                    .CountAsync(cp => cp.Enrollment.StudentId == userId &&
+                                      cp.Status == Core.Enums.ProgressStatus.Completed),
+                _ => 0
+            };
 
-                int currentValue;
-                switch (badge.TargetType)
-                {
-                    case "lessons_completed":
-                        currentValue = await _db.LessonProgresses
-                            .CountAsync(lp => lp.StudentId == userId && lp.Status == ProgressStatus.Completed);
-                        break;
-                    case "quizzes_passed":
-                        currentValue = await _db.QuizAttempts
-                            .CountAsync(a => a.StudentId == userId && a.ScoreAchieved >= 60);
-                        break;
-                    case "streak_days":
-                        currentValue = user.CurrentStreakDays;
-                        break;
-                    case "courses_completed":
-                        currentValue = await _db.CourseProgresses
-                            .CountAsync(cp => cp.Enrollment.StudentId == userId && cp.Status == ProgressStatus.Completed);
-                        break;
-                    default:
-                        currentValue = 0;
-                        break;
-                }
+            if (currentValue < badge.TargetValue) continue;
 
-                if (currentValue < badge.TargetValue) continue;
-
-                _db.UserBadges.Add(new UserBadge
-                {
-                    UserId = userId,
-                    BadgeId = badge.BadgeId,
-                    EarnedAt = now,
-                });
-                user.TotalXpPoints += badge.XpReward;
-            }
-
-            await _db.SaveChangesAsync();
+            db.UserBadges.Add(new UserBadge
+            {
+                UserId = userId,
+                BadgeId = badge.BadgeId,
+                EarnedAt = now,
+            });
+            user.TotalXpPoints += badge.XpReward;
         }
+
+        await db.SaveChangesAsync();
     }
 }

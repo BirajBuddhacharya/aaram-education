@@ -1,0 +1,16 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var statusMsg = ViewData["StatusMessage"] as string ?? "Something went wrong.";
+}
+
+<div class="container d-flex flex-column align-items-center justify-content-center" style="min-height:60vh;text-align:center">
+  <h1 style="font-size:4rem;color:var(--aaram-primary)">Oops</h1>
+  <p class="lead">@statusMsg</p>
+  @if (Model?.ShowRequestId == true)
+  {
+    <p class="text-muted small">Request ID: <code>@Model.RequestId</code></p>
+  }
+  <a href="/" class="btn btn-primary mt-3">Back to Home</a>
+</div>

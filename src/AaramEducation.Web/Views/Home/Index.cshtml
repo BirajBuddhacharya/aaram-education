@@ -1,0 +1,235 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- ══ Hero ════════════════════════════════════════════════════════════════ -->
+<section class="container" style="padding-top:72px;padding-bottom:88px">
+  <div class="row align-items-center gy-5">
+    <div class="col-lg-6">
+      <h1 class="t-hero mb-0">Learn in the<br />time you have.</h1>
+      <p class="t-lead mt-4 mb-4" style="max-width:30em">
+        Short lessons in maths, science, English and computing, with notes to keep,
+        quizzes that explain your mistakes, and a tutor for when you're stuck.
+      </p>
+      <div class="d-flex gap-3 flex-wrap mb-3">
+        <a asp-controller="Courses" asp-action="Index" class="btn-aaram btn-aaram-primary">Try a free lesson</a>
+        <a asp-controller="Courses" asp-action="Index" class="btn-aaram btn-aaram-outline">See all courses</a>
+      </div>
+      <p class="t-xs mb-0">No timetable and no tutor fees. Free samples open without an account.</p>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="time-card">
+        <div class="time-head">
+          <span class="time-head-word">I have</span>
+          <div class="time-picker" role="group" aria-label="Minutes available">
+            <button type="button" class="time-pill" data-mins="5">5</button>
+            <button type="button" class="time-pill active" data-mins="10">10</button>
+            <button type="button" class="time-pill" data-mins="15">15</button>
+          </div>
+          <span class="time-head-word">minutes</span>
+        </div>
+
+        <div id="fitList">
+          @foreach (var l in new[] {
+              ("Word problems",           "Algebra Foundations",     15, "maths"),
+              ("Web page layout",          "Web Basics: HTML and CSS", 14, "computing"),
+              ("Loops in Python",          "Programming with Python",  10, "computing"),
+              ("A strong opening line",    "Essay Writing",             9, "english"),
+              ("Solving linear equations", "Algebra Foundations",       8, "maths"),
+              ("Speed or velocity?",       "Motion and Forces",         7, "science"),
+              ("One-step equations",       "Algebra Foundations",       5, "maths"),
+              ("Nouns and verbs",          "Grammar Essentials",        4, "english"),
+          })
+          {
+            <a asp-controller="Courses" asp-action="Index" class="lesson-row" data-mins="@l.Item3">
+              <span class="subject-dot subject-@l.Item4"></span>
+              <span>
+                <span class="lesson-row-title d-block">@l.Item1</span>
+                <span class="lesson-row-sub d-block">@l.Item2</span>
+              </span>
+              <span class="lesson-row-time">@l.Item3 min</span>
+            </a>
+          }
+        </div>
+
+        <p class="t-xs mt-3 mb-0" id="fitNote">Enough for a full lesson and a look at the notes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Four ways in ════════════════════════════════════════════════════════ -->
+<section class="section-white section-py">
+  <div class="container">
+    <h2 class="t-h2 mb-5" style="max-width:15em">
+      Every topic, four ways in.<br />Use as many as you need.
+    </h2>
+
+    <div class="row g-4 g-lg-5">
+      <div class="col-sm-6 col-lg-3">
+        <div class="step-col">
+          <div class="step-num">1</div>
+          <div class="t-h4 mb-2">Watch</div>
+          <p class="t-small mb-0">A 5 to 10 minute video explains the idea. Pause it, rewind it, or come back tomorrow.</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="step-col">
+          <div class="step-num">2</div>
+          <div class="t-h4 mb-2">Read</div>
+          <p class="t-small mb-0">A one-page summary of the key points. Print it or keep it for revision offline.</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="step-col">
+          <div class="step-num">3</div>
+          <div class="t-h4 mb-2">Check</div>
+          <p class="t-small mb-0">A few practice questions with instant feedback that explains every answer.</p>
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <div class="step-col step-accent">
+          <div class="step-num">4</div>
+          <div class="t-h4 mb-2">Ask</div>
+          <p class="t-small mb-0">Still stuck? Book a one-to-one session with a tutor at a time that suits you.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Subjects ════════════════════════════════════════════════════════════ -->
+<section class="section-py">
+  <div class="container">
+    <div class="row gy-4">
+      <div class="col-lg-4">
+        <h2 class="t-h2 mb-3">Subjects</h2>
+        <p class="t-small mb-4" style="max-width:22em">
+          The four subjects students ask for help with most. More are on the way.
+        </p>
+        <a asp-controller="Courses" asp-action="Index" class="link-aaram">Browse all courses &rarr;</a>
+      </div>
+
+      <div class="col-lg-7 offset-lg-1">
+        <a asp-controller="Courses" asp-action="Index" asp-route-subject="Mathematics" class="subject-link">
+          <span class="subject-bar subject-maths"></span>
+          <span>
+            <span class="t-h3 d-block">Mathematics</span>
+            <span class="t-xs d-block mt-1">Algebra, trigonometry, geometry</span>
+          </span>
+          <span class="t-xs">16 lessons</span>
+        </a>
+        <a asp-controller="Courses" asp-action="Index" asp-route-subject="Science" class="subject-link">
+          <span class="subject-bar subject-science"></span>
+          <span>
+            <span class="t-h3 d-block">Science</span>
+            <span class="t-xs d-block mt-1">Physics, chemistry, biology</span>
+          </span>
+          <span class="t-xs">18 lessons</span>
+        </a>
+        <a asp-controller="Courses" asp-action="Index" asp-route-subject="English" class="subject-link">
+          <span class="subject-bar subject-english"></span>
+          <span>
+            <span class="t-h3 d-block">English</span>
+            <span class="t-xs d-block mt-1">Writing, grammar, comprehension</span>
+          </span>
+          <span class="t-xs">14 lessons</span>
+        </a>
+        <a asp-controller="Courses" asp-action="Index" asp-route-subject="Computing" class="subject-link">
+          <span class="subject-bar subject-computing"></span>
+          <span>
+            <span class="t-h3 d-block">Computing</span>
+            <span class="t-xs d-block mt-1">Programming, web, data</span>
+          </span>
+          <span class="t-xs">21 lessons</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Audience ════════════════════════════════════════════════════════════ -->
+<section class="section-tint section-py">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-md-4">
+        <div class="t-h4 mb-3">For students</div>
+        <p class="t-body mb-3" style="max-width:26em">
+          Cover what you missed, revise at your own pace, and take practice quizzes
+          without any pressure. Pick up exactly where you left off.
+        </p>
+        <a asp-controller="Account" asp-action="Register" class="link-aaram">Create a free account &rarr;</a>
+      </div>
+      <div class="col-md-4">
+        <div class="t-h4 mb-3">For tutors</div>
+        <p class="t-body mb-3" style="max-width:26em">
+          Upload lessons and notes, build quizzes, and track your students' progress
+          from one simple dashboard. No technical knowledge needed.
+        </p>
+        <a asp-controller="Account" asp-action="Register" class="link-aaram">Join as a tutor &rarr;</a>
+      </div>
+      <div class="col-md-4">
+        <div class="t-h4 mb-3">Just browsing</div>
+        <p class="t-body mb-3" style="max-width:26em">
+          Free sample lessons are open without an account. Have a look around and
+          see if it is a good fit before signing up.
+        </p>
+        <a asp-controller="Courses" asp-action="Index" class="link-aaram">Browse free lessons &rarr;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Quote ═══════════════════════════════════════════════════════════════ -->
+<section class="container section-py">
+  <blockquote class="quote-text">
+    &ldquo;I came back to maths after fifteen years to help my daughter. Nobody rushed me.&rdquo;
+  </blockquote>
+  <div class="d-flex align-items-center gap-3 flex-wrap mt-4">
+    <span class="t-small mb-0">Ramesh T., from the guest book</span>
+    <a asp-controller="Guestbook" asp-action="Index" class="link-aaram">Read more messages</a>
+  </div>
+</section>
+
+<!-- ══ CTA ═════════════════════════════════════════════════════════════════ -->
+<section class="container" style="padding-bottom:96px">
+  <div class="cta-banner">
+    <h2>Five minutes is enough to start.</h2>
+    <a asp-controller="Courses" asp-action="Index" class="btn-aaram btn-aaram-gold">Try a free lesson</a>
+  </div>
+</section>
+
+@section Scripts {
+<script>
+  (function () {
+    const notes = {
+      5:  'Short enough to squeeze in before the bus. No account needed.',
+      10: 'Enough for a full lesson and a look at the notes.',
+      15: 'Time for a lesson, the notes and a practice quiz.'
+    };
+    const rows = Array.from(document.querySelectorAll('#fitList .lesson-row'));
+    const note = document.getElementById('fitNote');
+
+    function apply(max) {
+      let shown = 0;
+      rows.forEach(r => {
+        const fits = Number(r.dataset.mins) <= max && shown < 4;
+        r.style.display = fits ? '' : 'none';
+        if (fits) shown++;
+      });
+      note.textContent = notes[max];
+    }
+
+    document.querySelectorAll('.time-pill').forEach(pill => {
+      pill.addEventListener('click', function () {
+        document.querySelectorAll('.time-pill').forEach(p => p.classList.remove('active'));
+        this.classList.add('active');
+        apply(Number(this.dataset.mins));
+      });
+    });
+
+    apply(10);
+  })();
+</script>
+}

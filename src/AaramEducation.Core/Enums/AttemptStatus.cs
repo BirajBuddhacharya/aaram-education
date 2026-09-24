@@ -1,9 +1,8 @@
-namespace AaramEducation.Core.Enums
+namespace AaramEducation.Core.Enums;
+
+public enum AttemptStatus
 {
-    public enum AttemptStatus
-    {
-        InProgress,
-        Submitted,
-        Graded
-    }
+    InProgress,
+    Submitted,
+    Graded
 }

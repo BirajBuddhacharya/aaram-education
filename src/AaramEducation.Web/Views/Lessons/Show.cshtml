@@ -1,0 +1,216 @@
+@model AaramEducation.Web.Models.ViewModels.Lessons.LessonViewModel
+@using AaramEducation.Core.Enums
+@{
+    ViewData["Title"] = Model.Lesson.LessonTitle;
+    var total = Model.Siblings.Count;
+    var doneCount = Model.CompletedLessonIds.Count;
+    var pct = total > 0 ? (int)Math.Round(doneCount * 100.0 / total) : 0;
+    var position = Model.Siblings.ToList().FindIndex(l => l.LessonId == Model.Lesson.LessonId) + 1;
+}
+
+@functions {
+    static string ExtractYouTubeId(string url)
+    {
+        try
+        {
+            var uri = new Uri(url);
+            var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            return query["v"] ?? uri.Segments.LastOrDefault()?.TrimEnd('/') ?? "";
+        }
+        catch { return ""; }
+    }
+}
+
+<div class="container" style="padding-top:32px;padding-bottom:72px">
+
+  <nav class="crumbs mb-4" aria-label="Breadcrumb">
+    <a asp-controller="Courses" asp-action="Index">Courses</a>
+    <span class="sep">/</span>
+    <a asp-controller="Courses" asp-action="Index" asp-route-subject="@Model.Subject">@Model.Subject</a>
+    <span class="sep">/</span>
+    <a asp-controller="Courses" asp-action="Details" asp-route-id="@Model.CourseId">@Model.CourseName</a>
+    <span class="sep">/</span>
+    <span>@Model.Lesson.LessonTitle</span>
+  </nav>
+
+  <div class="row g-4 g-lg-5">
+
+    <!-- ══ Main ══════════════════════════════════════════════════════════ -->
+    <div class="col-lg-8">
+
+      @if (Model.Video is not null)
+      {
+        <div class="video-wrapper mb-3" id="video-container"
+             data-lesson-id="@Model.Lesson.LessonId"
+             data-resume="@Model.ResumePositionSeconds">
+          @if (Model.Video.VideoUrl.Contains("youtube.com") || Model.Video.VideoUrl.Contains("youtu.be"))
+          {
+            var ytId = ExtractYouTubeId(Model.Video.VideoUrl);
+            <div class="ratio ratio-16x9">
+              <iframe src="https://www.youtube.com/embed/@ytId?enablejsapi=1"
+                      title="@Model.Video.VideoTitle" allowfullscreen></iframe>
+            </div>
+          }
+          else
+          {
+            <video id="lesson-video" class="w-100" controls title="@Model.Video.VideoTitle">
+              <source src="@Model.Video.VideoUrl" type="video/mp4" />
+              Your browser does not support HTML5 video.
+            </video>
+          }
+        </div>
+      }
+
+      <p class="t-xs mb-2">
+        Lesson @position of @total@(Model.Video is { DurationSeconds: > 0 } v ? $", {Math.Max(1, v.DurationSeconds / 60)} minutes" : "")@(string.IsNullOrWhiteSpace(Model.TutorName) ? "" : $", with {Model.TutorName}")
+      </p>
+
+      <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap mb-4">
+        <h1 class="lesson-title mb-0">@Model.Lesson.LessonTitle</h1>
+        @if (Model.NextLessonId.HasValue)
+        {
+          <a asp-action="Show" asp-route-id="@Model.NextLessonId"
+             class="btn-aaram btn-aaram-outline btn-aaram-sm">Next lesson</a>
+        }
+      </div>
+
+      @if (Model.LessonStatus == ProgressStatus.Completed)
+      {
+        <div class="card-tint mb-4 d-flex align-items-center gap-2">
+          <strong>&#10003; Lesson completed</strong>
+        </div>
+      }
+
+      <div class="segmented mb-4" role="tablist">
+        <button type="button" class="active" data-tab="notes" role="tab" aria-selected="true">Notes</button>
+        <button type="button" data-tab="quiz" role="tab" aria-selected="false">
+          Practice quiz@(Model.Quizzes.Any() ? "" : " (none)")
+        </button>
+      </div>
+
+      <div id="tab-notes" class="prose">
+        @if (!string.IsNullOrWhiteSpace(Model.Lesson.LessonDescription))
+        {
+          <p>@Model.Lesson.LessonDescription</p>
+        }
+
+        @if (Model.StudyNotes.Any())
+        {
+          foreach (var note in Model.StudyNotes)
+          {
+            <div class="mb-4">
+              <div class="t-h4 mb-2">@note.NoteTitle</div>
+              @if (!string.IsNullOrWhiteSpace(note.NoteContent))
+              {
+                <p>@note.NoteContent</p>
+              }
+              @if (!string.IsNullOrWhiteSpace(note.FileUrl))
+              {
+                <a href="@note.FileUrl" class="btn-aaram btn-aaram-outline btn-aaram-sm" download>Download notes</a>
+              }
+            </div>
+          }
+        }
+        else if (string.IsNullOrWhiteSpace(Model.Lesson.LessonDescription))
+        {
+          <p class="t-small">No written notes for this lesson yet.</p>
+        }
+
+        @if (User.Identity?.IsAuthenticated == true && Model.LessonStatus != ProgressStatus.Completed)
+        {
+          <form asp-action="Complete" asp-controller="Lessons" method="post" class="mt-4">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="lessonId" value="@Model.Lesson.LessonId" />
+            <button type="submit" class="btn-aaram btn-aaram-primary">&#10003; Mark as complete</button>
+          </form>
+        }
+      </div>
+
+      <div id="tab-quiz" class="d-none">
+        @if (Model.Quizzes.Any())
+        {
+          <div class="d-flex flex-column gap-3">
+            @foreach (var quiz in Model.Quizzes)
+            {
+              <a asp-controller="Quiz" asp-action="Start" asp-route-quizId="@quiz.QuizId"
+                 class="course-card flex-row align-items-center justify-content-between">
+                <span>
+                  <span class="t-h4 d-block">@quiz.QuizTitle</span>
+                  <span class="t-xs">Up to @quiz.MaxAttempts attempts</span>
+                </span>
+                <span class="btn-aaram btn-aaram-primary btn-aaram-sm">Start</span>
+              </a>
+            }
+          </div>
+        }
+        else
+        {
+          <p class="t-small">No practice quiz for this lesson yet.</p>
+        }
+      </div>
+    </div>
+
+    <!-- ══ Sidebar ═══════════════════════════════════════════════════════ -->
+    <div class="col-lg-4">
+      <div class="sticky-top" style="top:96px">
+
+        <div class="card-aaram p-0 mb-4" style="overflow:hidden">
+          <div class="p-4 pb-3">
+            <div class="t-xs mb-1">@Model.CourseName</div>
+            <div class="t-h4 mb-3">@Model.ModuleName</div>
+            <div class="progress-bar-aaram mb-2">
+              <div class="fill" style="width:@pct%"></div>
+            </div>
+            <div class="t-xs">@doneCount of @total lessons done</div>
+          </div>
+
+          @foreach (var (sib, i) in Model.Siblings.Select((s, i) => (s, i)))
+          {
+            var isCurrent = sib.LessonId == Model.Lesson.LessonId;
+            var isDone = Model.CompletedLessonIds.Contains(sib.LessonId);
+            var numClass = isDone ? "done" : isCurrent ? "current" : "";
+            var secs = sib.Videos.FirstOrDefault()?.DurationSeconds ?? 0;
+            <a asp-action="Show" asp-route-id="@sib.LessonId"
+               class="toc-row @(isCurrent ? "current" : "")"
+               aria-current="@(isCurrent ? "true" : null)">
+              <span class="toc-num @numClass">@(isDone ? "✓" : (i + 1).ToString())</span>
+              <span>@sib.LessonTitle</span>
+              <span class="toc-time">@(secs > 0 ? $"{Math.Max(1, secs / 60)} min" : sib.IsFreeSample ? "free" : "")</span>
+            </a>
+          }
+        </div>
+
+        <div class="card-tint">
+          <div class="t-h4 mb-2">Still stuck?</div>
+          <p class="t-small mb-3">
+            Ask the tutor who made this course to walk you through it.
+          </p>
+          <a asp-controller="Courses" asp-action="Details" asp-route-id="@Model.CourseId"
+             class="btn-aaram btn-aaram-dark btn-aaram-sm">Back to course</a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+@section Scripts {
+  <script src="~/js/lesson-player.js"></script>
+  <script>
+    window.aaramAntiForgeryToken = document.querySelector('input[name="__RequestVerificationToken"]')?.value ?? '';
+
+    document.querySelectorAll('.segmented [data-tab]').forEach(btn => {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.segmented [data-tab]').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        this.classList.add('active');
+        this.setAttribute('aria-selected', 'true');
+        document.getElementById('tab-notes').classList.toggle('d-none', this.dataset.tab !== 'notes');
+        document.getElementById('tab-quiz').classList.toggle('d-none', this.dataset.tab !== 'quiz');
+      });
+    });
+  </script>
+}

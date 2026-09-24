@@ -1,22 +1,19 @@
-using System;
+namespace AaramEducation.Core.Entities;
 
-namespace AaramEducation.Core.Entities
+public class DailyActivityLog
 {
-    public class DailyActivityLog
-    {
-        public int LogId { get; set; }
-        public int UserId { get; set; }
-        public DateTime ActivityDate { get; set; }  // Date only (time stripped) — stored as DATE in DB
-        public int LoginCount { get; set; }
-        public int LessonsStarted { get; set; }
-        public int LessonsCompleted { get; set; }
-        public int QuizzesAttempted { get; set; }
-        public int QuizzesPassed { get; set; }
-        public int NotesDownloaded { get; set; }
-        public int VideoWatchSeconds { get; set; }
-        public int TotalTimeSeconds { get; set; }
-        public int XpEarned { get; set; }
+    public int LogId { get; set; }
+    public int UserId { get; set; }
+    public DateOnly ActivityDate { get; set; }
+    public int LoginCount { get; set; }
+    public int LessonsStarted { get; set; }
+    public int LessonsCompleted { get; set; }
+    public int QuizzesAttempted { get; set; }
+    public int QuizzesPassed { get; set; }
+    public int NotesDownloaded { get; set; }
+    public int VideoWatchSeconds { get; set; }
+    public int TotalTimeSeconds { get; set; }
+    public int XpEarned { get; set; }
 
-        public virtual User User { get; set; } = null!;
-    }
+    public User User { get; set; } = null!;
 }

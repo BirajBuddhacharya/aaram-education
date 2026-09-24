@@ -1,0 +1,59 @@
+@model AaramEducation.Web.Models.ViewModels.Admin.AdminCourseListViewModel
+@{ ViewData["Title"] = "Manage Courses"; }
+
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h1>Courses</h1>
+    <a asp-action="Dashboard" class="btn btn-outline-secondary btn-sm">← Dashboard</a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Course</th>
+          <th>Tutor</th>
+          <th>Subject</th>
+          <th>Difficulty</th>
+          <th>Published</th>
+          <th>Enrollments</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var row in Model.Courses)
+        {
+          var c = row.Course;
+          <tr>
+            <td class="fw-semibold">@c.CourseName</td>
+            <td class="text-muted small">@c.CreatedBy?.FirstName @c.CreatedBy?.LastName</td>
+            <td>@c.Subject</td>
+            <td>@c.DifficultyLevel</td>
+            <td>
+              @if (c.IsPublished)
+              { <span class="badge bg-success">Published</span> }
+              else
+              { <span class="badge bg-secondary">Draft</span> }
+            </td>
+            <td>@row.EnrollmentCount</td>
+            <td class="d-flex gap-1 flex-wrap">
+              <form asp-action="TogglePublish" method="post" class="m-0">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="courseId" value="@c.CourseId" />
+                <button type="submit" class="btn btn-sm @(c.IsPublished ? "btn-outline-secondary" : "btn-outline-success")">
+                  @(c.IsPublished ? "Unpublish" : "Publish")
+                </button>
+              </form>
+              <form asp-action="DeleteCourse" method="post" class="m-0"
+                    onsubmit="return confirm('Delete course and all its content?')">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="courseId" value="@c.CourseId" />
+                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+              </form>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

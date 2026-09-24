@@ -1,16 +1,13 @@
-using System;
+namespace AaramEducation.Core.Entities;
 
-namespace AaramEducation.Core.Entities
+public class Notification
 {
-    public class Notification
-    {
-        public int NotificationId { get; set; }
-        public int UserId { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public string Message { get; set; } = string.Empty;
-        public bool IsRead { get; set; }
-        public DateTime CreatedAt { get; set; }
+    public int NotificationId { get; set; }
+    public int UserId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Message { get; set; } = string.Empty;
+    public bool IsRead { get; set; }
+    public DateTime CreatedAt { get; set; }
 
-        public virtual User User { get; set; } = null!;
-    }
+    public User User { get; set; } = null!;
 }

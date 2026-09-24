@@ -4,4 +4,7 @@
     <Project Path="src/AaramEducation.Infrastructure/AaramEducation.Infrastructure.csproj" />
     <Project Path="src/AaramEducation.Web/AaramEducation.Web.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AaramEducation.Tests/AaramEducation.Tests.csproj" />
+  </Folder>
 </Solution>
