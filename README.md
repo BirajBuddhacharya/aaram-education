@@ -217,3 +217,21 @@ Default dev URL: `https://localhost:5001`
 - [Frontend Design](docs/frontend-design.md)
 - [Setup Guide](docs/setup.md)
 - [ERD (Mermaid)](ERD.md)
+
+
+### Test Users
+┌─────────┬────────────────────┬──────────────┐
+│  Role   │       Email        │   Password   │
+├─────────┼────────────────────┼──────────────┤
+│ Admin   │ admin@aaram.edu    │ Admin@1234   │
+├─────────┼────────────────────┼──────────────┤
+│ Tutor   │ tutor1@aaram.edu   │ Tutor@1234   │
+├─────────┼────────────────────┼──────────────┤
+│ Tutor   │ tutor2@aaram.edu   │ Tutor@1234   │
+├─────────┼────────────────────┼──────────────┤
+│ Student │ student1@aaram.edu │ Student@1234 │
+├─────────┼────────────────────┼──────────────┤
+│ Student │ student2@aaram.edu │ Student@1234 │
+├─────────┼────────────────────┼──────────────┤
+│ Student │ student3@aaram.edu │ Student@1234 │
+└─────────┴────────────────────┴──────────────┘

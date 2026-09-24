@@ -12,6 +12,18 @@ public class ProgressRepository(ApplicationDbContext db) : IProgressRepository
         db.LessonProgresses.AsNoTracking()
             .FirstOrDefaultAsync(lp => lp.StudentId == studentId && lp.LessonId == lessonId);
 
+    public async Task<HashSet<int>> GetCompletedLessonIdsAsync(int studentId, IEnumerable<int> lessonIds)
+    {
+        var ids = lessonIds.ToList();
+        var done = await db.LessonProgresses.AsNoTracking()
+            .Where(lp => lp.StudentId == studentId
+                      && ids.Contains(lp.LessonId)
+                      && lp.Status == ProgressStatus.Completed)
+            .Select(lp => lp.LessonId)
+            .ToListAsync();
+        return done.ToHashSet();
+    }
+
     public async Task UpsertLessonProgressAsync(int studentId, int lessonId, ProgressStatus status, int? videoPositionSeconds = null)
     {
         var lp = await db.LessonProgresses

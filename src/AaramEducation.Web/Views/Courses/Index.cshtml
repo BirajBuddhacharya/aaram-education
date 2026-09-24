@@ -1,72 +1,99 @@
 @model AaramEducation.Web.Models.ViewModels.Courses.CourseListViewModel
-@{ ViewData["Title"] = "Courses"; }
+@{
+  ViewData["Title"] = "Courses";
+  var noFilter = Model.SelectedSubject is null;
+}
 
-<div class="container py-4">
-  <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-    <h1 class="mb-0">Course Catalog</h1>
-    <span class="text-muted small">@Model.Courses.Count() course(s)</span>
-  </div>
+<div class="container" style="padding-top:40px;padding-bottom:80px">
 
-  <div class="d-flex flex-wrap gap-2 mb-3">
-    <a asp-action="Index" class="filter-pill @(Model.SelectedSubject is null && Model.SelectedDifficulty is null ? "active" : "")">All</a>
-    @foreach (var s in Model.Subjects)
-    {
-      <a asp-action="Index" asp-route-subject="@s" asp-route-difficulty="@Model.SelectedDifficulty"
-         class="filter-pill @(Model.SelectedSubject == s ? "active" : "")">@s</a>
-    }
-  </div>
+  <nav class="crumbs mb-4" aria-label="Breadcrumb">
+    <a asp-controller="Home" asp-action="Index">Home</a>
+    <span class="sep">/</span>
+    <span>Courses</span>
+  </nav>
 
-  <div class="d-flex gap-2 mb-4 flex-wrap align-items-center">
-    <span class="text-muted small">Difficulty:</span>
-    @foreach (var d in new[] { "Beginner", "Intermediate", "Advanced" })
-    {
-      <a asp-action="Index" asp-route-subject="@Model.SelectedSubject" asp-route-difficulty="@d"
-         class="filter-pill @(Model.SelectedDifficulty == d ? "active" : "")">@d</a>
-    }
-    @if (Model.SelectedDifficulty is not null)
-    {
-      <a asp-action="Index" asp-route-subject="@Model.SelectedSubject" class="filter-pill">Clear</a>
-    }
+  <h1 class="t-h1 mb-3">Courses</h1>
+  <p class="t-body mb-4" style="max-width:34em">
+    Every course is split into lessons of 5 to 10 minutes. Stop whenever you like
+    and pick up where you left off.
+  </p>
+
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div class="d-flex flex-wrap gap-2">
+      <a asp-action="Index" asp-route-difficulty="@Model.SelectedDifficulty"
+         class="chip @(noFilter ? "active" : "")">All</a>
+      @foreach (var s in Model.Subjects)
+      {
+        <a asp-action="Index" asp-route-subject="@s" asp-route-difficulty="@Model.SelectedDifficulty"
+           class="chip @(Model.SelectedSubject == s ? "active" : "")">@s</a>
+      }
+    </div>
+
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+      <span class="t-xs me-1">Level</span>
+      @foreach (var d in new[] { "Beginner", "Intermediate", "Advanced" })
+      {
+        <a asp-action="Index" asp-route-subject="@Model.SelectedSubject"
+           asp-route-difficulty="@(Model.SelectedDifficulty == d ? null : d)"
+           class="chip @(Model.SelectedDifficulty == d ? "active" : "")">@d</a>
+      }
+    </div>
   </div>
 
   @if (!Model.Courses.Any())
   {
-    <div class="text-center py-5 text-muted">
-      <p class="fs-5">No courses found.</p>
-      <a asp-action="Index" class="btn btn-outline-secondary">Clear filters</a>
+    <div class="card-aaram text-center" style="padding:56px 24px">
+      <p class="t-h4 mb-2">No courses match those filters.</p>
+      <p class="t-small mb-4">Try a different subject or level.</p>
+      <div><a asp-action="Index" class="btn-aaram btn-aaram-outline btn-aaram-sm">Clear filters</a></div>
     </div>
   }
   else
   {
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">
       @foreach (var course in Model.Courses)
       {
         var isEnrolled = Model.EnrolledCourseIds.Contains(course.CourseId);
-        var diffClass = course.DifficultyLevel.ToLower() switch
+        var lessonCount = course.Modules.Sum(m => m.Lessons.Count);
+        var hasFreeSample = course.Modules.Any(m => m.Lessons.Any(l => l.IsFreeSample));
+        var subjectClass = course.Subject.ToLower() switch
         {
-          "beginner" => "difficulty-beginner",
-          "intermediate" => "difficulty-intermediate",
-          "advanced" => "difficulty-advanced",
-          _ => ""
+          "mathematics" or "maths" or "math" => "subject-maths",
+          "science" => "subject-science",
+          "english" => "subject-english",
+          "computing" or "computer science" => "subject-computing",
+          _ => "subject-maths"
         };
         <div class="col">
-          <div class="course-card">
-            <div class="course-card-header">
-              <span class="subject-badge">@course.Subject</span>
-              <h5 class="mb-1 mt-1">@course.CourseName</h5>
-              <small>by @course.CreatedBy.FirstName @course.CreatedBy.LastName</small>
+          <a class="course-card" asp-action="Details" asp-route-id="@course.CourseId">
+            <div class="d-flex justify-content-between align-items-center gap-2">
+              <span class="course-card-subject">
+                <span class="subject-dot @subjectClass"></span>@course.Subject
+              </span>
+              @if (isEnrolled)
+              {
+                <span class="pill-free">Enrolled</span>
+              }
+              else if (hasFreeSample)
+              {
+                <span class="pill-free">Free sample</span>
+              }
             </div>
-            <div class="course-card-body">
-              <p class="text-muted small mb-2">@(course.CourseDescription.Length > 120 ? course.CourseDescription[..120] + "…" : course.CourseDescription)</p>
-              <span class="difficulty-badge @diffClass">@course.DifficultyLevel</span>
+
+            <div class="t-h4">@course.CourseName</div>
+
+            <p class="t-small mb-0 flex-grow-1">
+              @(course.CourseDescription.Length > 110
+                  ? course.CourseDescription[..110] + "…"
+                  : course.CourseDescription)
+            </p>
+
+            <div class="t-xs">
+              @lessonCount lesson@(lessonCount == 1 ? "" : "s"),
+              @course.DifficultyLevel.ToLower(),
+              taught by @course.CreatedBy.FirstName @(course.CreatedBy.LastName.Length > 0 ? course.CreatedBy.LastName[0] + "." : "")
             </div>
-            <div class="course-card-footer">
-              <a asp-action="Details" asp-route-id="@course.CourseId"
-                 class="btn btn-sm @(isEnrolled ? "btn-outline-primary" : "btn-primary") w-100">
-                @(isEnrolled ? "Continue learning" : "View course")
-              </a>
-            </div>
-          </div>
+          </a>
         </div>
       }
     </div>

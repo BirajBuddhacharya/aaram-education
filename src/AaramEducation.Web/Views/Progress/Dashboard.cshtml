@@ -4,119 +4,109 @@
     ViewData["Title"] = "My Dashboard";
 }
 
-<div class="container py-4">
+<div class="container" style="padding-top:40px;padding-bottom:80px">
 
-  <h1 class="mb-4">Welcome back, @Model.Student.FirstName!</h1>
+  <h1 class="t-h1 mb-5">Welcome back, @Model.Student.FirstName!</h1>
 
-  <%-- Stat cards --%>
-  <div class="row g-3 mb-4">
+  @* Stat cards *@
+  <div class="row g-3 mb-5">
     <div class="col-md-4">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body text-center">
-          <div class="fs-1 fw-bold" style="color:var(--aaram-primary)">@Model.Student.TotalXpPoints</div>
-          <div class="text-muted">XP Points</div>
-        </div>
+      <div class="card-aaram text-center">
+        <div class="t-hero" style="font-size:40px;letter-spacing:-.02em;color:var(--aaram-primary)">@Model.Student.TotalXpPoints</div>
+        <div class="t-small mt-1">XP points</div>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body text-center">
-          <div class="fs-1 fw-bold" style="color:var(--aaram-accent)">@Model.Student.CurrentStreakDays</div>
-          <div class="text-muted">Day Streak (longest: @Model.Student.LongestStreakDays)</div>
-        </div>
+      <div class="card-aaram text-center">
+        <div class="t-hero" style="font-size:40px;letter-spacing:-.02em;color:var(--aaram-amber-text)">@Model.Student.CurrentStreakDays</div>
+        <div class="t-small mt-1">Day streak (longest @Model.Student.LongestStreakDays)</div>
       </div>
     </div>
     <div class="col-md-4">
-      <div class="card h-100 border-0 shadow-sm">
-        <div class="card-body text-center">
-          <div class="fs-1 fw-bold" style="color:var(--aaram-primary)">@Model.BadgeCount</div>
-          <div class="text-muted">Badges Earned</div>
-        </div>
+      <div class="card-aaram text-center">
+        <div class="t-hero" style="font-size:40px;letter-spacing:-.02em;color:var(--aaram-primary)">@Model.BadgeCount</div>
+        <div class="t-small mt-1">Badges earned</div>
       </div>
     </div>
   </div>
 
-  <%-- Enrolled courses --%>
-  <h4 class="mb-3">My Courses</h4>
+  @* Enrolled courses *@
+  <h2 class="t-h3 mb-3">My courses</h2>
   @if (!Model.EnrolledCourses.Any())
   {
-    <div class="alert alert-info">
-      No courses yet. <a asp-controller="Courses" asp-action="Index">Browse courses</a> to get started.
+    <div class="card-tint mb-5">
+      No courses yet. <a asp-controller="Courses" asp-action="Index" class="link-aaram">Browse courses</a> to get started.
     </div>
   }
   else
   {
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-5">
       @foreach (var card in Model.EnrolledCourses)
       {
         var pct = Math.Round(card.PercentComplete, 1);
-        var statusBadge = card.Status switch
+        var statusLabel = card.Status switch
         {
-            ProgressStatus.Completed  => ("bg-success", "Completed"),
-            ProgressStatus.InProgress => ("bg-primary", "In Progress"),
-            _                         => ("bg-secondary", "Not Started"),
+            ProgressStatus.Completed  => "Completed",
+            ProgressStatus.InProgress => "In progress",
+            _                         => "Not started",
         };
         <div class="col-md-6 col-lg-4">
-          <div class="card h-100 border-0 shadow-sm">
-            <div class="card-body d-flex flex-column">
-              <h6 class="card-title">@card.Enrollment.Course.CourseName</h6>
-              <span class="badge @statusBadge.Item1 mb-2 align-self-start">@statusBadge.Item2</span>
-              <div class="progress mb-1" style="height:8px">
-                <div class="progress-bar" role="progressbar"
-                     style="width:@pct%;background:var(--aaram-primary)"
-                     aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-              <small class="text-muted mb-3">@pct% complete</small>
-              <a asp-controller="Courses" asp-action="Details"
-                 asp-route-id="@card.Enrollment.CourseId"
-                 class="btn btn-sm btn-outline-primary mt-auto">Continue</a>
+          <div class="course-card">
+            <div class="t-h4">@card.Enrollment.Course.CourseName</div>
+            <span class="pill-free align-self-start">@statusLabel</span>
+            <div class="progress-bar-aaram green">
+              <div class="fill" style="width:@pct%"></div>
             </div>
+            <div class="t-xs mb-2">@pct% complete</div>
+            <a asp-controller="Courses" asp-action="Details"
+               asp-route-id="@card.Enrollment.CourseId"
+               class="btn-aaram btn-aaram-outline btn-aaram-sm mt-auto">Continue</a>
           </div>
         </div>
       }
     </div>
   }
 
-  <%-- Recent badges + week activity --%>
+  @* Recent badges + week activity *@
   <div class="row g-4">
     <div class="col-md-6">
-      <h4 class="mb-3">Recent Badges</h4>
+      <h2 class="t-h3 mb-3">Recent badges</h2>
       @if (!Model.RecentBadges.Any())
       {
-        <p class="text-muted">No badges yet — keep learning!</p>
+        <p class="t-small">No badges yet — keep learning!</p>
       }
       else
       {
-        <ul class="list-group list-group-flush">
+        <div class="d-flex flex-column">
           @foreach (var ub in Model.RecentBadges)
           {
-            <li class="list-group-item px-0 d-flex align-items-center gap-2">
-              <span class="fs-4">@(string.IsNullOrWhiteSpace(ub.Badge.IconUrl) ? "🏅" : "")</span>
+            <div class="d-flex align-items-center gap-3" style="padding:14px 0;border-top:1px solid var(--aaram-border)">
+              <span class="user-avatar" style="width:38px;height:38px;font-size:16px">@(string.IsNullOrWhiteSpace(ub.Badge.IconUrl) ? "🏅" : "")</span>
               <div>
-                <strong>@ub.Badge.BadgeName</strong>
-                <div class="text-muted small">+@ub.Badge.XpReward XP · @ub.EarnedAt.ToString("MMM d")</div>
+                <div style="font-weight:700">@ub.Badge.BadgeName</div>
+                <div class="t-xs">+@ub.Badge.XpReward XP · @ub.EarnedAt.ToString("MMM d")</div>
               </div>
-            </li>
+            </div>
           }
-        </ul>
+        </div>
         @if (Model.BadgeCount > 3)
         {
-          <a asp-controller="Badges" asp-action="Index" class="btn btn-link ps-0">View all @Model.BadgeCount badges</a>
+          <a asp-controller="Badges" asp-action="Index" class="link-aaram d-inline-block mt-3">View all @Model.BadgeCount badges</a>
         }
       }
     </div>
 
     <div class="col-md-6">
-      <h4 class="mb-3">This Week</h4>
+      <h2 class="t-h3 mb-3">This week</h2>
       @if (!Model.RecentActivity.Any())
       {
-        <p class="text-muted">No activity yet.</p>
+        <p class="t-small">No activity yet.</p>
       }
       else
       {
         <table class="table table-sm">
           <thead>
-            <tr><th>Day</th><th>Lessons</th><th>Quizzes</th><th>XP</th></tr>
+            <tr class="t-xs"><th>Day</th><th>Lessons</th><th>Quizzes</th><th>XP</th></tr>
           </thead>
           <tbody>
             @foreach (var log in Model.RecentActivity)

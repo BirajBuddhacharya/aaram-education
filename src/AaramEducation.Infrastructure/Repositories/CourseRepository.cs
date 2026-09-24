@@ -11,6 +11,7 @@ public class CourseRepository(ApplicationDbContext db) : ICourseRepository
     {
         var q = db.Courses.AsNoTracking()
             .Include(c => c.CreatedBy)
+            .Include(c => c.Modules).ThenInclude(m => m.Lessons)
             .Where(c => c.IsPublished);
 
         if (!string.IsNullOrEmpty(subject))

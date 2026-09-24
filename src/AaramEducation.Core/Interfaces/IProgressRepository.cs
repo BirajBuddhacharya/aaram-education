@@ -6,6 +6,7 @@ namespace AaramEducation.Core.Interfaces;
 public interface IProgressRepository
 {
     Task<LessonProgress?> GetLessonProgressAsync(int studentId, int lessonId);
+    Task<HashSet<int>> GetCompletedLessonIdsAsync(int studentId, IEnumerable<int> lessonIds);
     Task UpsertLessonProgressAsync(int studentId, int lessonId, ProgressStatus status, int? videoPositionSeconds = null);
     Task<ModuleProgress?> GetModuleProgressAsync(int studentId, int moduleId);
     Task<CourseProgress?> GetCourseProgressAsync(int enrollmentId);

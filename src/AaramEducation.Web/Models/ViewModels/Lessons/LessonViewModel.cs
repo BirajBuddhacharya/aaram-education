@@ -16,4 +16,8 @@ public class LessonViewModel
     public string CourseName { get; set; } = string.Empty;
     public int CourseId { get; set; }
     public string ModuleName { get; set; } = string.Empty;
+    public string Subject { get; set; } = string.Empty;
+    public string TutorName { get; set; } = string.Empty;
+    public IReadOnlyList<Lesson> Siblings { get; set; } = [];
+    public HashSet<int> CompletedLessonIds { get; set; } = [];
 }

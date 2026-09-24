@@ -15,11 +15,12 @@ public class LessonRepository(ApplicationDbContext db) : ILessonRepository
             .Include(l => l.Videos)
             .Include(l => l.StudyNotes)
             .Include(l => l.Quizzes)
-            .Include(l => l.Module).ThenInclude(m => m.Course)
+            .Include(l => l.Module).ThenInclude(m => m.Course).ThenInclude(c => c.CreatedBy)
             .FirstOrDefaultAsync(l => l.LessonId == lessonId);
 
     public async Task<IEnumerable<Lesson>> GetByModuleAsync(int moduleId) =>
         await db.Lessons.AsNoTracking()
+            .Include(l => l.Videos)
             .Where(l => l.ModuleId == moduleId)
             .OrderBy(l => l.SequenceOrder)
             .ToListAsync();

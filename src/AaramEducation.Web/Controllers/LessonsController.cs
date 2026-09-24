@@ -44,8 +44,14 @@ public class LessonsController(
         var siblings = (await lessons.GetByModuleAsync(lesson.ModuleId)).ToList();
         var idx = siblings.FindIndex(l => l.LessonId == id);
 
+        var completed = studentId.HasValue
+            ? await progress.GetCompletedLessonIdsAsync(studentId.Value, siblings.Select(l => l.LessonId))
+            : [];
+
         return View(new LessonViewModel
         {
+            Siblings = siblings,
+            CompletedLessonIds = completed,
             Lesson = lesson,
             Video = lesson.Videos.FirstOrDefault(),
             StudyNotes = lesson.StudyNotes,
@@ -57,6 +63,8 @@ public class LessonsController(
             CourseName = course.CourseName,
             CourseId = course.CourseId,
             ModuleName = lesson.Module.ModuleName,
+            Subject = course.Subject,
+            TutorName = $"{course.CreatedBy.FirstName} {course.CreatedBy.LastName}".Trim(),
         });
     }
 
