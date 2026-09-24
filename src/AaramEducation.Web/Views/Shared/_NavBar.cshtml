@@ -1,0 +1,78 @@
+@using System.Security.Claims
+<nav class="navbar navbar-expand-lg navbar-aaram mb-0">
+  <div class="container">
+    <a class="navbar-brand" asp-controller="Home" asp-action="Index">Aaram Education</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain"
+            aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMain">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" asp-controller="Courses" asp-action="Index">Courses</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" asp-controller="Guestbook" asp-action="Index">Guestbook</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" asp-controller="Home" asp-action="About">About</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav ms-auto align-items-center gap-1">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+          var role = User.FindFirstValue(ClaimTypes.Role) ?? "Student";
+          var firstName = User.FindFirstValue(ClaimTypes.GivenName) ?? User.FindFirstValue(ClaimTypes.Email) ?? "Me";
+
+          @if (role == "Admin")
+          {
+            <li class="nav-item">
+              <a class="nav-link" asp-controller="Admin" asp-action="Dashboard">Dashboard</a>
+            </li>
+          }
+          else if (role == "Tutor")
+          {
+            <li class="nav-item">
+              <a class="nav-link" asp-controller="Tutor" asp-action="Dashboard">Dashboard</a>
+            </li>
+          }
+          else
+          {
+            <li class="nav-item">
+              <a class="nav-link" asp-controller="Courses" asp-action="MyEnrollments">My Courses</a>
+            </li>
+          }
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#"
+               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <span>@firstName</span>
+              <span class="role-badge @role.ToLower()">@role</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">My Profile</a></li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                  @Html.AntiForgeryToken()
+                  <button type="submit" class="dropdown-item text-danger">Sign out</button>
+                </form>
+              </li>
+            </ul>
+          </li>
+        }
+        else
+        {
+          <li class="nav-item">
+            <a class="nav-link" asp-controller="Account" asp-action="Login">Sign in</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-primary btn-sm ms-1" asp-controller="Account" asp-action="Register">Get started</a>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</nav>
