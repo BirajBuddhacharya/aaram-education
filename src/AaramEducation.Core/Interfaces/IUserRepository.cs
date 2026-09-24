@@ -1,14 +1,17 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using AaramEducation.Core.Entities;
 
-namespace AaramEducation.Core.Interfaces;
-
-public interface IUserRepository
+namespace AaramEducation.Core.Interfaces
 {
-    Task<User?> GetByIdAsync(int userId);
-    Task<User?> GetByEmailAsync(string email);
-    Task<IEnumerable<User>> GetAllAsync();
-    Task<User> CreateAsync(User user);
-    Task UpdateAsync(User user);
-    Task DeleteAsync(int userId);
-    Task<bool> EmailExistsAsync(string email);
+    public interface IUserRepository
+    {
+        Task<User?> GetByIdAsync(int userId);
+        Task<User?> GetByEmailAsync(string email);
+        Task<IEnumerable<User>> GetAllAsync();
+        Task<User> CreateAsync(User user);
+        Task UpdateAsync(User user);
+        Task DeleteAsync(int userId);
+        Task<bool> EmailExistsAsync(string email);
+    }
 }

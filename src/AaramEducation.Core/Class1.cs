@@ -1,6 +1,6 @@
-﻿namespace AaramEducation.Core;
-
-public class Class1
+namespace AaramEducation.Core
 {
-
+    public class Class1
+    {
+    }
 }

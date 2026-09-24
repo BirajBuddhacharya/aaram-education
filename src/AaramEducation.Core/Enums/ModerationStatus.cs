@@ -1,8 +1,9 @@
-namespace AaramEducation.Core.Enums;
-
-public enum ModerationStatus
+namespace AaramEducation.Core.Enums
 {
-    Pending,
-    Approved,
-    Rejected
+    public enum ModerationStatus
+    {
+        Pending,
+        Approved,
+        Rejected
+    }
 }

@@ -1,55 +1,63 @@
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
 using AaramEducation.Core.Entities;
 using AaramEducation.Core.Enums;
 using AaramEducation.Core.Interfaces;
 using AaramEducation.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 
-namespace AaramEducation.Infrastructure.Repositories;
-
-public class GuestbookRepository(ApplicationDbContext db) : IGuestbookRepository
+namespace AaramEducation.Infrastructure.Repositories
 {
-    public async Task<IEnumerable<GuestbookEntry>> GetApprovedAsync(int page, int pageSize) =>
-        await db.GuestbookEntries.AsNoTracking()
-            .Where(e => e.ModerationStatus == ModerationStatus.Approved)
-            .OrderByDescending(e => e.SubmittedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync();
-
-    public async Task<IEnumerable<GuestbookEntry>> GetPendingAsync() =>
-        await db.GuestbookEntries.AsNoTracking()
-            .Where(e => e.ModerationStatus == ModerationStatus.Pending)
-            .OrderBy(e => e.SubmittedAt)
-            .ToListAsync();
-
-    public async Task<GuestbookEntry> SubmitAsync(GuestbookEntry entry)
+    public class GuestbookRepository : IGuestbookRepository
     {
-        db.GuestbookEntries.Add(entry);
-        await db.SaveChangesAsync();
-        return entry;
-    }
+        private readonly ApplicationDbContext _db;
+        public GuestbookRepository(ApplicationDbContext db) { _db = db; }
 
-    public async Task ModerateAsync(int entryId, ModerationStatus status, int moderatorId)
-    {
-        var entry = await db.GuestbookEntries.FindAsync(entryId);
-        if (entry is null) return;
+        public async Task<IEnumerable<GuestbookEntry>> GetApprovedAsync(int page, int pageSize) =>
+            await _db.GuestbookEntries.AsNoTracking()
+                .Where(e => e.ModerationStatus == ModerationStatus.Approved)
+                .OrderByDescending(e => e.SubmittedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
-        entry.ModerationStatus = status;
-        entry.ModeratedBy = moderatorId;
-        entry.ModeratedAt = DateTime.UtcNow;
-        await db.SaveChangesAsync();
-    }
+        public async Task<IEnumerable<GuestbookEntry>> GetPendingAsync() =>
+            await _db.GuestbookEntries.AsNoTracking()
+                .Where(e => e.ModerationStatus == ModerationStatus.Pending)
+                .OrderBy(e => e.SubmittedAt)
+                .ToListAsync();
 
-    public async Task DeleteAsync(int entryId)
-    {
-        var entry = await db.GuestbookEntries.FindAsync(entryId);
-        if (entry is not null)
+        public async Task<GuestbookEntry> SubmitAsync(GuestbookEntry entry)
         {
-            db.GuestbookEntries.Remove(entry);
-            await db.SaveChangesAsync();
+            _db.GuestbookEntries.Add(entry);
+            await _db.SaveChangesAsync();
+            return entry;
         }
-    }
 
-    public Task<int> GetApprovedCountAsync() =>
-        db.GuestbookEntries.CountAsync(e => e.ModerationStatus == ModerationStatus.Approved);
+        public async Task ModerateAsync(int entryId, ModerationStatus status, int moderatorId)
+        {
+            var entry = await _db.GuestbookEntries.FindAsync(entryId);
+            if (entry is null) return;
+
+            entry.ModerationStatus = status;
+            entry.ModeratedBy = moderatorId;
+            entry.ModeratedAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(int entryId)
+        {
+            var entry = await _db.GuestbookEntries.FindAsync(entryId);
+            if (entry is not null)
+            {
+                _db.GuestbookEntries.Remove(entry);
+                await _db.SaveChangesAsync();
+            }
+        }
+
+        public Task<int> GetApprovedCountAsync() =>
+            _db.GuestbookEntries.CountAsync(e => e.ModerationStatus == ModerationStatus.Approved);
+    }
 }

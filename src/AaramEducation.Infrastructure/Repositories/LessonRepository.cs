@@ -1,70 +1,77 @@
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
 using AaramEducation.Core.Entities;
 using AaramEducation.Core.Interfaces;
 using AaramEducation.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 
-namespace AaramEducation.Infrastructure.Repositories;
-
-public class LessonRepository(ApplicationDbContext db) : ILessonRepository
+namespace AaramEducation.Infrastructure.Repositories
 {
-    public Task<Lesson?> GetByIdAsync(int lessonId) =>
-        db.Lessons.AsNoTracking().FirstOrDefaultAsync(l => l.LessonId == lessonId);
-
-    public Task<Lesson?> GetWithContentAsync(int lessonId) =>
-        db.Lessons.AsNoTracking()
-            .Include(l => l.Videos)
-            .Include(l => l.StudyNotes)
-            .Include(l => l.Quizzes)
-            .Include(l => l.Module).ThenInclude(m => m.Course).ThenInclude(c => c.CreatedBy)
-            .FirstOrDefaultAsync(l => l.LessonId == lessonId);
-
-    public async Task<IEnumerable<Lesson>> GetByModuleAsync(int moduleId) =>
-        await db.Lessons.AsNoTracking()
-            .Include(l => l.Videos)
-            .Where(l => l.ModuleId == moduleId)
-            .OrderBy(l => l.SequenceOrder)
-            .ToListAsync();
-
-    public async Task<Lesson> CreateAsync(Lesson lesson)
+    public class LessonRepository : ILessonRepository
     {
-        db.Lessons.Add(lesson);
-        await db.SaveChangesAsync();
-        return lesson;
-    }
+        private readonly ApplicationDbContext _db;
+        public LessonRepository(ApplicationDbContext db) { _db = db; }
 
-    public async Task UpdateAsync(Lesson lesson)
-    {
-        db.Lessons.Update(lesson);
-        await db.SaveChangesAsync();
-    }
+        public Task<Lesson?> GetByIdAsync(int lessonId) =>
+            _db.Lessons.AsNoTracking().FirstOrDefaultAsync(l => l.LessonId == lessonId);
 
-    public async Task DeleteAsync(int lessonId)
-    {
-        var lesson = await db.Lessons.FindAsync(lessonId);
-        if (lesson is not null)
+        public Task<Lesson?> GetWithContentAsync(int lessonId) =>
+            _db.Lessons.AsNoTracking()
+                .Include(l => l.Videos)
+                .Include(l => l.StudyNotes)
+                .Include(l => l.Quizzes)
+                .Include(l => l.Module.Course.CreatedBy)
+                .FirstOrDefaultAsync(l => l.LessonId == lessonId);
+
+        public async Task<IEnumerable<Lesson>> GetByModuleAsync(int moduleId) =>
+            await _db.Lessons.AsNoTracking()
+                .Include(l => l.Videos)
+                .Where(l => l.ModuleId == moduleId)
+                .OrderBy(l => l.SequenceOrder)
+                .ToListAsync();
+
+        public async Task<Lesson> CreateAsync(Lesson lesson)
         {
-            db.Lessons.Remove(lesson);
-            await db.SaveChangesAsync();
+            _db.Lessons.Add(lesson);
+            await _db.SaveChangesAsync();
+            return lesson;
         }
-    }
 
-    public Task<Video?> GetVideoAsync(int lessonId) =>
-        db.Videos.AsNoTracking().FirstOrDefaultAsync(v => v.LessonId == lessonId);
+        public async Task UpdateAsync(Lesson lesson)
+        {
+            _db.Entry(lesson).State = EntityState.Modified;
+            await _db.SaveChangesAsync();
+        }
 
-    public Task<StudyNote?> GetStudyNoteAsync(int noteId) =>
-        db.StudyNotes.AsNoTracking().FirstOrDefaultAsync(n => n.NoteId == noteId);
+        public async Task DeleteAsync(int lessonId)
+        {
+            var lesson = await _db.Lessons.FindAsync(lessonId);
+            if (lesson is not null)
+            {
+                _db.Lessons.Remove(lesson);
+                await _db.SaveChangesAsync();
+            }
+        }
 
-    public async Task<Video> SaveVideoAsync(Video video)
-    {
-        db.Videos.Add(video);
-        await db.SaveChangesAsync();
-        return video;
-    }
+        public Task<Video?> GetVideoAsync(int lessonId) =>
+            _db.Videos.AsNoTracking().FirstOrDefaultAsync(v => v.LessonId == lessonId);
 
-    public async Task<StudyNote> SaveStudyNoteAsync(StudyNote note)
-    {
-        db.StudyNotes.Add(note);
-        await db.SaveChangesAsync();
-        return note;
+        public Task<StudyNote?> GetStudyNoteAsync(int noteId) =>
+            _db.StudyNotes.AsNoTracking().FirstOrDefaultAsync(n => n.NoteId == noteId);
+
+        public async Task<Video> SaveVideoAsync(Video video)
+        {
+            _db.Videos.Add(video);
+            await _db.SaveChangesAsync();
+            return video;
+        }
+
+        public async Task<StudyNote> SaveStudyNoteAsync(StudyNote note)
+        {
+            _db.StudyNotes.Add(note);
+            await _db.SaveChangesAsync();
+            return note;
+        }
     }
 }

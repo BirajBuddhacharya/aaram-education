@@ -1,8 +1,9 @@
-namespace AaramEducation.Core.Enums;
-
-public enum QuestionType
+namespace AaramEducation.Core.Enums
 {
-    MultipleChoice,
-    TrueFalse,
-    ShortAnswer
+    public enum QuestionType
+    {
+        MultipleChoice,
+        TrueFalse,
+        ShortAnswer
+    }
 }

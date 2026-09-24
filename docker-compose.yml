@@ -3,10 +3,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    restart: unless-stopped
     env_file:
       - path: .env
-        required: false 
+        required: false
     environment:
       DB_HOST: ${DB_HOST:-host.docker.internal}
     extra_hosts:

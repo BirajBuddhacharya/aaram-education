@@ -1,8 +1,9 @@
-namespace AaramEducation.Core.Enums;
-
-public enum UserRole
+namespace AaramEducation.Core.Enums
 {
-    Student,
-    Tutor,
-    Admin
+    public enum UserRole
+    {
+        Student,
+        Tutor,
+        Admin
+    }
 }
