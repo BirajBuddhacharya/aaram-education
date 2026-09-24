@@ -1,0 +1,70 @@
+@model AaramEducation.Core.Entities.Course
+@{ ViewData["Title"] = "Manage: " + Model.CourseName; }
+
+<div class="container py-4">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+      <a asp-action="Dashboard" class="text-muted small">← My Courses</a>
+      <h1 class="mb-0">@Model.CourseName</h1>
+    </div>
+    <div class="d-flex gap-2">
+      <a asp-action="EditCourse" asp-route-id="@Model.CourseId" class="btn btn-outline-secondary btn-sm">Edit Details</a>
+      <form asp-action="TogglePublish" asp-route-id="@Model.CourseId" method="post">
+        @Html.AntiForgeryToken()
+        <button class="btn btn-sm @(Model.IsPublished ? "btn-warning" : "btn-success")">
+          @(Model.IsPublished ? "Unpublish" : "Publish")
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <a asp-action="CreateModule" asp-route-courseId="@Model.CourseId" class="btn btn-primary btn-sm">+ Add Module</a>
+  </div>
+
+  @if (!Model.Modules.Any())
+  {
+    <p class="text-muted">No modules yet. Add your first module above.</p>
+  }
+
+  @foreach (var mod in Model.Modules.OrderBy(m => m.SequenceOrder))
+  {
+    <div class="card mb-3">
+      <div class="card-header d-flex align-items-center justify-content-between">
+        <span class="fw-semibold">#@mod.SequenceOrder — @mod.ModuleName</span>
+        <div class="d-flex gap-2">
+          <a asp-action="CreateLesson" asp-route-moduleId="@mod.ModuleId" class="btn btn-sm btn-outline-primary">+ Lesson</a>
+          <a asp-action="EditModule" asp-route-id="@mod.ModuleId" class="btn btn-sm btn-outline-secondary">Edit</a>
+          <form asp-action="DeleteModule" asp-route-id="@mod.ModuleId" method="post" class="d-inline"
+                onsubmit="return confirm('Delete module @mod.ModuleName?')">
+            @Html.AntiForgeryToken()
+            <button class="btn btn-sm btn-outline-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+      <ul class="list-group list-group-flush">
+        @foreach (var lesson in mod.Lessons.OrderBy(l => l.SequenceOrder))
+        {
+          <li class="list-group-item d-flex align-items-center justify-content-between">
+            <span>
+              #@lesson.SequenceOrder — @lesson.LessonTitle
+              @if (lesson.IsFreeSample) { <span class="badge bg-info ms-1">Free</span> }
+            </span>
+            <div class="d-flex gap-2">
+              <a asp-action="EditLesson" asp-route-id="@lesson.LessonId" class="btn btn-sm btn-outline-secondary">Edit</a>
+              <form asp-action="DeleteLesson" asp-route-id="@lesson.LessonId" method="post" class="d-inline"
+                    onsubmit="return confirm('Delete lesson @lesson.LessonTitle?')">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-sm btn-outline-danger">Delete</button>
+              </form>
+            </div>
+          </li>
+        }
+        @if (!mod.Lessons.Any())
+        {
+          <li class="list-group-item text-muted small">No lessons yet.</li>
+        }
+      </ul>
+    </div>
+  }
+</div>

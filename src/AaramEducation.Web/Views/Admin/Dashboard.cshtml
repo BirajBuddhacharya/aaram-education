@@ -1,0 +1,71 @@
+@model AaramEducation.Web.Models.ViewModels.Admin.AdminDashboardViewModel
+@{ ViewData["Title"] = "Admin Dashboard"; }
+
+<div class="container py-4">
+  <h1 class="mb-4">Admin Dashboard</h1>
+
+  @if (Model.PendingGuestbookEntries > 0)
+  {
+    <div class="alert alert-warning d-flex align-items-center gap-2">
+      <strong>@Model.PendingGuestbookEntries</strong> guestbook entries awaiting moderation.
+      <a asp-action="Guestbook" class="btn btn-sm btn-warning ms-2">Review now</a>
+    </div>
+  }
+
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <div class="fs-2 fw-bold text-primary">@Model.TotalUsers</div>
+          <div class="text-muted small">Total Users</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <div class="fs-2 fw-bold">@Model.TotalStudents</div>
+          <div class="text-muted small">Students</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <div class="fs-2 fw-bold">@Model.TotalTutors</div>
+          <div class="text-muted small">Tutors</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <div class="fs-2 fw-bold text-success">@Model.PublishedCourses</div>
+          <div class="text-muted small">Published Courses</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <div class="fs-2 fw-bold">@Model.TotalCourses</div>
+          <div class="text-muted small">Total Courses</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4 col-lg-2">
+      <div class="card text-center h-100">
+        <div class="card-body">
+          <div class="fs-2 fw-bold text-info">@Model.TotalEnrollments</div>
+          <div class="text-muted small">Enrollments</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2 flex-wrap">
+    <a asp-action="Users" class="btn btn-outline-primary">Manage Users</a>
+    <a asp-action="Courses" class="btn btn-outline-primary">Manage Courses</a>
+    <a asp-action="Guestbook" class="btn btn-outline-warning">Guestbook Moderation</a>
+  </div>
+</div>
