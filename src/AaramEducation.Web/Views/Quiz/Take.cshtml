@@ -1,0 +1,54 @@
+@model QuizTakeViewModel
+@{ ViewData["Title"] = "Quiz: " + Model.Quiz.QuizTitle; Layout = "~/Views/Shared/_Layout.cshtml"; }
+
+<div class="quiz-timer-bar sticky-top py-2 bg-light border-bottom text-end px-3">
+  Time: <span id="quiz-timer" class="fw-bold">00:00</span>
+</div>
+
+<div class="container py-4" style="max-width:800px">
+  <h1 class="mb-4">@Model.Quiz.QuizTitle</h1>
+
+  <form asp-action="Submit" asp-route-attemptId="@Model.AttemptId" method="post">
+    @Html.AntiForgeryToken()
+
+    @{ int qnum = 1; }
+    @foreach (var q in Model.Quiz.Questions.OrderBy(x => x.SequenceOrder))
+    {
+      <div class="card mb-4">
+        <div class="card-body">
+          <p class="fw-semibold mb-3">@qnum. @q.QuestionText</p>
+
+          @if (q.QuestionType == QuestionType.ShortAnswer)
+          {
+            <textarea name="q_@q.QuestionId" class="form-control" rows="3"
+                      placeholder="Your answer..."></textarea>
+          }
+          else
+          {
+            @foreach (var opt in q.Options.OrderBy(o => o.SequenceOrder))
+            {
+              <div class="form-check">
+                <input class="form-check-input" type="radio"
+                       name="q_@q.QuestionId" id="opt_@opt.OptionId"
+                       value="@opt.OptionId" />
+                <label class="form-check-label" for="opt_@opt.OptionId">
+                  @opt.OptionText
+                </label>
+              </div>
+            }
+          }
+        </div>
+      </div>
+      qnum++;
+    }
+
+    <button type="submit" class="btn btn-primary btn-lg"
+            onclick="return confirm('Submit quiz? You cannot change your answers after submitting.')">
+      Submit Quiz
+    </button>
+  </form>
+</div>
+
+@section Scripts {
+  <script src="~/js/quiz-timer.js"></script>
+}
