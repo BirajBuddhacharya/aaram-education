@@ -29,28 +29,28 @@ namespace AaramEducation.Infrastructure.Repositories
                 .Include(l => l.Videos)
                 .Where(l => l.ModuleId == moduleId)
                 .OrderBy(l => l.SequenceOrder)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
 
         public async Task<Lesson> CreateAsync(Lesson lesson)
         {
             _db.Lessons.Add(lesson);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
             return lesson;
         }
 
         public async Task UpdateAsync(Lesson lesson)
         {
             _db.Entry(lesson).State = EntityState.Modified;
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteAsync(int lessonId)
         {
-            var lesson = await _db.Lessons.FindAsync(lessonId);
+            var lesson = await _db.Lessons.FindAsync(lessonId).ConfigureAwait(false);
             if (lesson is not null)
             {
                 _db.Lessons.Remove(lesson);
-                await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync().ConfigureAwait(false);
             }
         }
 
@@ -63,14 +63,14 @@ namespace AaramEducation.Infrastructure.Repositories
         public async Task<Video> SaveVideoAsync(Video video)
         {
             _db.Videos.Add(video);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
             return video;
         }
 
         public async Task<StudyNote> SaveStudyNoteAsync(StudyNote note)
         {
             _db.StudyNotes.Add(note);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
             return note;
         }
     }

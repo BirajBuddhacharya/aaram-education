@@ -20,14 +20,14 @@ namespace AaramEducation.Infrastructure.Repositories
                 .Include(e => e.CourseProgress)
                 .Where(e => e.StudentId == studentId)
                 .OrderByDescending(e => e.EnrollmentDate)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
 
         public async Task<IEnumerable<Enrollment>> GetByCourseAsync(int courseId) =>
             await _db.Enrollments.AsNoTracking()
                 .Include(e => e.Student)
                 .Include(e => e.CourseProgress)
                 .Where(e => e.CourseId == courseId)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
 
         public Task<Enrollment?> GetAsync(int studentId, int courseId) =>
             _db.Enrollments.AsNoTracking()
@@ -43,13 +43,13 @@ namespace AaramEducation.Infrastructure.Repositories
         public async Task<Enrollment> EnrollAsync(int studentId, int courseId)
         {
             var existing = await _db.Enrollments
-                .FirstOrDefaultAsync(e => e.StudentId == studentId && e.CourseId == courseId);
+                .FirstOrDefaultAsync(e => e.StudentId == studentId && e.CourseId == courseId).ConfigureAwait(false);
 
             if (existing is not null)
             {
                 existing.EnrollmentStatus = EnrollmentStatus.Active;
                 existing.EnrollmentDate = System.DateTime.UtcNow;
-                await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync().ConfigureAwait(false);
                 return existing;
             }
 
@@ -61,7 +61,7 @@ namespace AaramEducation.Infrastructure.Repositories
                 EnrollmentStatus = EnrollmentStatus.Active,
             };
             _db.Enrollments.Add(enrollment);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
 
             _db.CourseProgresses.Add(new CourseProgress
             {
@@ -69,7 +69,7 @@ namespace AaramEducation.Infrastructure.Repositories
                 Status = ProgressStatus.NotStarted,
                 LastAccessedAt = System.DateTime.UtcNow,
             });
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
 
             return enrollment;
         }
@@ -77,12 +77,12 @@ namespace AaramEducation.Infrastructure.Repositories
         public async Task DropAsync(int studentId, int courseId)
         {
             var enrollment = await _db.Enrollments
-                .FirstOrDefaultAsync(e => e.StudentId == studentId && e.CourseId == courseId);
+                .FirstOrDefaultAsync(e => e.StudentId == studentId && e.CourseId == courseId).ConfigureAwait(false);
 
             if (enrollment is not null)
             {
                 enrollment.EnrollmentStatus = EnrollmentStatus.Dropped;
-                await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync().ConfigureAwait(false);
             }
         }
     }

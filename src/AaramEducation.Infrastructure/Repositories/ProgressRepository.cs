@@ -27,14 +27,14 @@ namespace AaramEducation.Infrastructure.Repositories
                           && ids.Contains(lp.LessonId)
                           && lp.Status == ProgressStatus.Completed)
                 .Select(lp => lp.LessonId)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
             return new HashSet<int>(done);
         }
 
         public async Task UpsertLessonProgressAsync(int studentId, int lessonId, ProgressStatus status, int? videoPositionSeconds = null)
         {
             var lp = await _db.LessonProgresses
-                .FirstOrDefaultAsync(x => x.StudentId == studentId && x.LessonId == lessonId);
+                .FirstOrDefaultAsync(x => x.StudentId == studentId && x.LessonId == lessonId).ConfigureAwait(false);
 
             var now = DateTime.UtcNow;
 
@@ -65,7 +65,7 @@ namespace AaramEducation.Infrastructure.Repositories
                 lp.LastAccessedAt = now;
             }
 
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public Task<ModuleProgress?> GetModuleProgressAsync(int studentId, int moduleId) =>
@@ -82,7 +82,7 @@ namespace AaramEducation.Infrastructure.Repositories
             var lesson = await _db.Lessons
                 .Include(l => l.Module.Lessons)
                 .Include(l => l.Module.Course.Modules.Select(m => m.Lessons))
-                .FirstOrDefaultAsync(l => l.LessonId == lessonId);
+                .FirstOrDefaultAsync(l => l.LessonId == lessonId).ConfigureAwait(false);
 
             if (lesson is null) return;
 
@@ -94,12 +94,12 @@ namespace AaramEducation.Infrastructure.Repositories
             var completedInModule = await _db.LessonProgresses
                 .CountAsync(lp => lp.StudentId == studentId &&
                                   lp.Status == ProgressStatus.Completed &&
-                                  moduleLessonIds.Contains(lp.LessonId));
+                                  moduleLessonIds.Contains(lp.LessonId)).ConfigureAwait(false);
 
             var totalInModule = module.Lessons.Count;
 
             var mp = await _db.ModuleProgresses
-                .FirstOrDefaultAsync(x => x.StudentId == studentId && x.ModuleId == module.ModuleId);
+                .FirstOrDefaultAsync(x => x.StudentId == studentId && x.ModuleId == module.ModuleId).ConfigureAwait(false);
 
             if (mp is null)
             {
@@ -116,10 +116,10 @@ namespace AaramEducation.Infrastructure.Repositories
             if (mp.Status == ProgressStatus.Completed && mp.CompletedAt is null)
                 mp.CompletedAt = now;
 
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
 
             var enrollment = await _db.Enrollments
-                .FirstOrDefaultAsync(e => e.StudentId == studentId && e.CourseId == course.CourseId);
+                .FirstOrDefaultAsync(e => e.StudentId == studentId && e.CourseId == course.CourseId).ConfigureAwait(false);
             if (enrollment is null) return;
 
             var allLessonIds = course.Modules.SelectMany(m => m.Lessons).Select(l => l.LessonId).ToList();
@@ -129,15 +129,15 @@ namespace AaramEducation.Infrastructure.Repositories
             var completedLessons = await _db.LessonProgresses
                 .CountAsync(lp => lp.StudentId == studentId &&
                                   lp.Status == ProgressStatus.Completed &&
-                                  allLessonIds.Contains(lp.LessonId));
+                                  allLessonIds.Contains(lp.LessonId)).ConfigureAwait(false);
 
             var completedModules = await _db.ModuleProgresses
                 .CountAsync(mpr => mpr.StudentId == studentId &&
                                    mpr.Status == ProgressStatus.Completed &&
-                                   allModuleIds.Contains(mpr.ModuleId));
+                                   allModuleIds.Contains(mpr.ModuleId)).ConfigureAwait(false);
 
             var cp = await _db.CourseProgresses
-                .FirstOrDefaultAsync(x => x.EnrollmentId == enrollment.EnrollmentId);
+                .FirstOrDefaultAsync(x => x.EnrollmentId == enrollment.EnrollmentId).ConfigureAwait(false);
 
             if (cp is null) return;
 
@@ -151,7 +151,7 @@ namespace AaramEducation.Infrastructure.Repositories
             if (cp.Status == ProgressStatus.Completed && cp.CompletedAt is null)
                 cp.CompletedAt = now;
 
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task<DailyActivityLog> UpsertDailyLogAsync(int userId, Action<DailyActivityLog> update)
@@ -159,7 +159,7 @@ namespace AaramEducation.Infrastructure.Repositories
             var today = DateTime.UtcNow.Date;
 
             var log = await _db.DailyActivityLogs
-                .FirstOrDefaultAsync(d => d.UserId == userId && d.ActivityDate == today);
+                .FirstOrDefaultAsync(d => d.UserId == userId && d.ActivityDate == today).ConfigureAwait(false);
 
             if (log is null)
             {
@@ -168,7 +168,7 @@ namespace AaramEducation.Infrastructure.Repositories
             }
 
             update(log);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
             return log;
         }
     }

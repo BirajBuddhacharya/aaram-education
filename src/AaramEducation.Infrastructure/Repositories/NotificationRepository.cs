@@ -19,7 +19,7 @@ namespace AaramEducation.Infrastructure.Repositories
                 .Where(n => n.UserId == userId)
                 .OrderByDescending(n => n.CreatedAt)
                 .Take(count)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
 
         public Task<int> GetUnreadCountAsync(int userId) =>
             _db.Notifications.CountAsync(n => n.UserId == userId && !n.IsRead);
@@ -34,16 +34,16 @@ namespace AaramEducation.Infrastructure.Repositories
                 IsRead = false,
                 CreatedAt = DateTime.UtcNow,
             });
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task MarkReadAsync(int notificationId, int userId)
         {
             var n = await _db.Notifications
-                .FirstOrDefaultAsync(x => x.NotificationId == notificationId && x.UserId == userId);
+                .FirstOrDefaultAsync(x => x.NotificationId == notificationId && x.UserId == userId).ConfigureAwait(false);
             if (n is null) return;
             n.IsRead = true;
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task MarkAllReadAsync(int userId)
@@ -51,10 +51,10 @@ namespace AaramEducation.Infrastructure.Repositories
             // EF6 has no ExecuteUpdateAsync — load and update individually
             var unread = await _db.Notifications
                 .Where(n => n.UserId == userId && !n.IsRead)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
             foreach (var n in unread)
                 n.IsRead = true;
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

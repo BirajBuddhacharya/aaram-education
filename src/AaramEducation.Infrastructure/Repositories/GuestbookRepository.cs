@@ -21,39 +21,39 @@ namespace AaramEducation.Infrastructure.Repositories
                 .OrderByDescending(e => e.SubmittedAt)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
 
         public async Task<IEnumerable<GuestbookEntry>> GetPendingAsync() =>
             await _db.GuestbookEntries.AsNoTracking()
                 .Where(e => e.ModerationStatus == ModerationStatus.Pending)
                 .OrderBy(e => e.SubmittedAt)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
 
         public async Task<GuestbookEntry> SubmitAsync(GuestbookEntry entry)
         {
             _db.GuestbookEntries.Add(entry);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
             return entry;
         }
 
         public async Task ModerateAsync(int entryId, ModerationStatus status, int moderatorId)
         {
-            var entry = await _db.GuestbookEntries.FindAsync(entryId);
+            var entry = await _db.GuestbookEntries.FindAsync(entryId).ConfigureAwait(false);
             if (entry is null) return;
 
             entry.ModerationStatus = status;
             entry.ModeratedBy = moderatorId;
             entry.ModeratedAt = DateTime.UtcNow;
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteAsync(int entryId)
         {
-            var entry = await _db.GuestbookEntries.FindAsync(entryId);
+            var entry = await _db.GuestbookEntries.FindAsync(entryId).ConfigureAwait(false);
             if (entry is not null)
             {
                 _db.GuestbookEntries.Remove(entry);
-                await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync().ConfigureAwait(false);
             }
         }
 

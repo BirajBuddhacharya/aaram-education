@@ -20,28 +20,28 @@ namespace AaramEducation.Infrastructure.Repositories
             _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
 
         public async Task<IEnumerable<User>> GetAllAsync() =>
-            await _db.Users.AsNoTracking().OrderBy(u => u.LastName).ToListAsync();
+            await _db.Users.AsNoTracking().OrderBy(u => u.LastName).ToListAsync().ConfigureAwait(false);
 
         public async Task<User> CreateAsync(User user)
         {
             _db.Users.Add(user);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
             return user;
         }
 
         public async Task UpdateAsync(User user)
         {
             _db.Entry(user).State = EntityState.Modified;
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteAsync(int userId)
         {
-            var user = await _db.Users.FindAsync(userId);
+            var user = await _db.Users.FindAsync(userId).ConfigureAwait(false);
             if (user is not null)
             {
                 _db.Users.Remove(user);
-                await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync().ConfigureAwait(false);
             }
         }
 

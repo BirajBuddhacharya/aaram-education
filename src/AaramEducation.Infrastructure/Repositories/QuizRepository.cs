@@ -20,7 +20,7 @@ namespace AaramEducation.Infrastructure.Repositories
             // EF6 can't sort inside Include — load then sort in memory
             var quiz = await _db.Quizzes.AsNoTracking()
                 .Include(q => q.Questions.Select(qq => qq.Options))
-                .FirstOrDefaultAsync(q => q.QuizId == quizId);
+                .FirstOrDefaultAsync(q => q.QuizId == quizId).ConfigureAwait(false);
 
             if (quiz != null)
             {
@@ -38,14 +38,14 @@ namespace AaramEducation.Infrastructure.Repositories
             await _db.QuizAttempts.AsNoTracking()
                 .Where(a => a.StudentId == studentId && a.QuizId == quizId)
                 .OrderByDescending(a => a.AttemptDate)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
 
         public async Task<QuizAttempt?> GetAttemptWithResponsesAsync(int attemptId)
         {
             var attempt = await _db.QuizAttempts.AsNoTracking()
                 .Include(a => a.Quiz.Questions.Select(qq => qq.Options))
                 .Include(a => a.Responses.Select(r => r.SelectedOption))
-                .FirstOrDefaultAsync(a => a.AttemptId == attemptId);
+                .FirstOrDefaultAsync(a => a.AttemptId == attemptId).ConfigureAwait(false);
 
             if (attempt?.Quiz != null)
                 attempt.Quiz.Questions = attempt.Quiz.Questions.OrderBy(qq => qq.SequenceOrder).ToList();
@@ -63,7 +63,7 @@ namespace AaramEducation.Infrastructure.Repositories
                 AttemptStatus = AttemptStatus.InProgress,
             };
             _db.QuizAttempts.Add(attempt);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
             return attempt;
         }
 
@@ -74,7 +74,7 @@ namespace AaramEducation.Infrastructure.Repositories
             var attempt = await _db.QuizAttempts
                 .Include(a => a.Quiz.Questions.Select(qq => qq.Options))
                 .FirstOrDefaultAsync(a => a.AttemptId == attemptId)
-                ?? throw new InvalidOperationException($"Attempt {attemptId} not found.");
+                ?? throw new InvalidOperationException($"Attempt {attemptId} not found.").ConfigureAwait(false);
 
             var now = DateTime.UtcNow;
             int score = 0;
@@ -106,30 +106,30 @@ namespace AaramEducation.Infrastructure.Repositories
             attempt.TimeTakenSeconds = (int)(now - attempt.AttemptDate).TotalSeconds;
             attempt.AttemptStatus = AttemptStatus.Graded;
 
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
             return attempt;
         }
 
         public async Task<Quiz> CreateAsync(Quiz quiz)
         {
             _db.Quizzes.Add(quiz);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
             return quiz;
         }
 
         public async Task UpdateAsync(Quiz quiz)
         {
             _db.Entry(quiz).State = EntityState.Modified;
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteAsync(int quizId)
         {
-            var quiz = await _db.Quizzes.FindAsync(quizId);
+            var quiz = await _db.Quizzes.FindAsync(quizId).ConfigureAwait(false);
             if (quiz is not null)
             {
                 _db.Quizzes.Remove(quiz);
-                await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync().ConfigureAwait(false);
             }
         }
     }

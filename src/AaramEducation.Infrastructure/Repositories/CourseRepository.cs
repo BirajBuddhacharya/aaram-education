@@ -25,7 +25,7 @@ namespace AaramEducation.Infrastructure.Repositories
             if (!string.IsNullOrEmpty(difficulty))
                 q = q.Where(c => c.DifficultyLevel == difficulty);
 
-            return await q.OrderBy(c => c.CourseName).ToListAsync();
+            return await q.OrderBy(c => c.CourseName).ToListAsync().ConfigureAwait(false);
         }
 
         public async Task<IEnumerable<Course>> GetByTutorAsync(int tutorUserId)
@@ -35,7 +35,7 @@ namespace AaramEducation.Infrastructure.Repositories
                 .Include(c => c.Enrollments)
                 .Where(c => c.CreatedByUserId == tutorUserId)
                 .OrderByDescending(c => c.CreatedAt)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
             return courses;
         }
 
@@ -50,7 +50,7 @@ namespace AaramEducation.Infrastructure.Repositories
                 .Include(c => c.CreatedBy)
                 .Include(c => c.Modules.Select(m => m.Lessons))
                 .Include(c => c.Enrollments)
-                .FirstOrDefaultAsync(c => c.CourseId == courseId);
+                .FirstOrDefaultAsync(c => c.CourseId == courseId).ConfigureAwait(false);
 
             if (course != null)
             {
@@ -64,33 +64,33 @@ namespace AaramEducation.Infrastructure.Repositories
         public async Task<Course> CreateAsync(Course course)
         {
             _db.Courses.Add(course);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
             return course;
         }
 
         public async Task UpdateAsync(Course course)
         {
             _db.Entry(course).State = EntityState.Modified;
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
 
         public async Task DeleteAsync(int courseId)
         {
-            var course = await _db.Courses.FindAsync(courseId);
+            var course = await _db.Courses.FindAsync(courseId).ConfigureAwait(false);
             if (course is not null)
             {
                 _db.Courses.Remove(course);
-                await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync().ConfigureAwait(false);
             }
         }
 
         public async Task PublishAsync(int courseId, bool publish)
         {
-            var course = await _db.Courses.FindAsync(courseId);
+            var course = await _db.Courses.FindAsync(courseId).ConfigureAwait(false);
             if (course is not null)
             {
                 course.IsPublished = publish;
-                await _db.SaveChangesAsync();
+                await _db.SaveChangesAsync().ConfigureAwait(false);
             }
         }
     }

@@ -16,24 +16,24 @@ namespace AaramEducation.Infrastructure.Repositories
         public BadgeRepository(ApplicationDbContext db) { _db = db; }
 
         public async Task<IEnumerable<Badge>> GetAllAsync() =>
-            await _db.Badges.AsNoTracking().OrderBy(b => b.TargetValue).ToListAsync();
+            await _db.Badges.AsNoTracking().OrderBy(b => b.TargetValue).ToListAsync().ConfigureAwait(false);
 
         public async Task<IEnumerable<UserBadge>> GetUserBadgesAsync(int userId) =>
             await _db.UserBadges.AsNoTracking()
                 .Include(ub => ub.Badge)
                 .Where(ub => ub.UserId == userId)
                 .OrderByDescending(ub => ub.EarnedAt)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
 
         public async Task CheckAndAwardAsync(int userId)
         {
-            var badges = await _db.Badges.AsNoTracking().ToListAsync();
+            var badges = await _db.Badges.AsNoTracking().ToListAsync().ConfigureAwait(false);
             var earnedBadgeIds = await _db.UserBadges
                 .Where(ub => ub.UserId == userId)
                 .Select(ub => ub.BadgeId)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
 
-            var user = await _db.Users.FindAsync(userId);
+            var user = await _db.Users.FindAsync(userId).ConfigureAwait(false);
             if (user is null) return;
 
             var now = DateTime.UtcNow;
@@ -47,18 +47,18 @@ namespace AaramEducation.Infrastructure.Repositories
                 {
                     case "lessons_completed":
                         currentValue = await _db.LessonProgresses
-                            .CountAsync(lp => lp.StudentId == userId && lp.Status == ProgressStatus.Completed);
+                            .CountAsync(lp => lp.StudentId == userId && lp.Status == ProgressStatus.Completed).ConfigureAwait(false);
                         break;
                     case "quizzes_passed":
                         currentValue = await _db.QuizAttempts
-                            .CountAsync(a => a.StudentId == userId && a.ScoreAchieved >= 60);
+                            .CountAsync(a => a.StudentId == userId && a.ScoreAchieved >= 60).ConfigureAwait(false);
                         break;
                     case "streak_days":
                         currentValue = user.CurrentStreakDays;
                         break;
                     case "courses_completed":
                         currentValue = await _db.CourseProgresses
-                            .CountAsync(cp => cp.Enrollment.StudentId == userId && cp.Status == ProgressStatus.Completed);
+                            .CountAsync(cp => cp.Enrollment.StudentId == userId && cp.Status == ProgressStatus.Completed).ConfigureAwait(false);
                         break;
                     default:
                         currentValue = 0;
@@ -76,7 +76,7 @@ namespace AaramEducation.Infrastructure.Repositories
                 user.TotalXpPoints += badge.XpReward;
             }
 
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }
