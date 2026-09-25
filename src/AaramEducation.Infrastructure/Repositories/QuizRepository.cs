@@ -73,8 +73,8 @@ namespace AaramEducation.Infrastructure.Repositories
         {
             var attempt = await _db.QuizAttempts
                 .Include(a => a.Quiz.Questions.Select(qq => qq.Options))
-                .FirstOrDefaultAsync(a => a.AttemptId == attemptId)
-                ?? throw new InvalidOperationException($"Attempt {attemptId} not found.").ConfigureAwait(false);
+                .FirstOrDefaultAsync(a => a.AttemptId == attemptId).ConfigureAwait(false)
+                ?? throw new InvalidOperationException($"Attempt {attemptId} not found.");
 
             var now = DateTime.UtcNow;
             int score = 0;
