@@ -58,9 +58,9 @@
     </footer>
   </form>
 
-  <script src="~/wwwroot/lib/jquery/dist/jquery.min.js" runat="server"></script>
-  <script src="~/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.min.js" runat="server"></script>
-  <script src="~/wwwroot/js/site.js" runat="server"></script>
+  <script src='<%= ResolveUrl("~/wwwroot/lib/jquery/dist/jquery.min.js") %>'></script>
+  <script src='<%= ResolveUrl("~/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.min.js") %>'></script>
+  <script src='<%= ResolveUrl("~/wwwroot/js/site.js") %>'></script>
   <asp:ContentPlaceHolder ID="ScriptsContent" runat="server" />
 </body>
 </html>
