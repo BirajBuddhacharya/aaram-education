@@ -30,15 +30,15 @@ namespace AaramEducation.Web
             }
             catch (Exception ex)
             {
-                LogStartupFailure(ex);
+                LogException(ex, "Application_Start");
                 throw;
             }
         }
 
-        private static void LogStartupFailure(Exception ex)
+        private static void LogException(Exception ex, string context)
         {
             var sb = new System.Text.StringBuilder();
-            sb.AppendLine("Application_Start failed at " + DateTime.Now.ToString("u"));
+            sb.AppendLine(context + " failed at " + DateTime.Now.ToString("u"));
             sb.AppendLine();
 
             for (Exception? cur = ex; cur != null; cur = cur.InnerException)
@@ -56,7 +56,7 @@ namespace AaramEducation.Web
 
             try
             {
-                System.IO.File.WriteAllText(
+                System.IO.File.AppendAllText(
                     System.IO.Path.Combine(System.IO.Path.GetTempPath(), "aaram-startup-error.log"),
                     sb.ToString());
             }
@@ -84,11 +84,30 @@ namespace AaramEducation.Web
         protected void Application_Error(object sender, EventArgs e)
         {
             Exception? ex = Server.GetLastError();
-            if (ex != null)
+            if (ex == null) return;
+
+            LogException(ex, "Application_Error");
+
+            bool onErrorPage;
+            try
             {
-                Server.ClearError();
-                Response.Redirect("~/Shared/Error.aspx");
+                onErrorPage = (Request.AppRelativeCurrentExecutionFilePath ?? string.Empty)
+                    .IndexOf("Shared/Error.aspx", StringComparison.OrdinalIgnoreCase) >= 0;
             }
+            catch { onErrorPage = false; }
+
+            // If the error page itself threw, redirecting to it again just loops until
+            // the browser gives up. Leave the error unhandled so ASP.NET renders the
+            // real detail page instead (customErrors is off).
+            if (onErrorPage) return;
+
+            // Writing a redirect to a client that has already disconnected throws.
+            try { if (!Response.IsClientConnected) return; } catch { return; }
+
+            Server.ClearError();
+            // endResponse:false avoids the ThreadAbortException that Redirect otherwise raises.
+            Response.Redirect("~/Shared/Error.aspx", false);
+            CompleteRequest();
         }
     }
 }

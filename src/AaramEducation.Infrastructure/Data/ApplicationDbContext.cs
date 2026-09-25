@@ -10,7 +10,7 @@ namespace AaramEducation.Infrastructure.Data
     [DbConfigurationType(typeof(MySqlEFConfiguration))]
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext() : base("name=DefaultConnection") { }
+        public ApplicationDbContext() : base(DbConnectionString.Value) { }
         public ApplicationDbContext(string nameOrConnectionString) : base(nameOrConnectionString) { }
 
         public DbSet<User> Users { get; set; } = null!;
