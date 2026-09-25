@@ -13,7 +13,12 @@ namespace AaramEducation.Web
         protected global::System.Web.UI.HtmlControls.HtmlTitle PageTitle;
         protected global::System.Web.UI.WebControls.ContentPlaceHolder HeadContent;
         protected global::System.Web.UI.HtmlControls.HtmlForm MainForm;
-        protected global::System.Web.UI.WebControls.Button btnLogout;
+        protected global::System.Web.UI.WebControls.Panel pnlUnreadBadge;
+        protected global::System.Web.UI.WebControls.Literal litUnreadCount;
+        protected global::System.Web.UI.WebControls.Panel pnlNotifyEmpty;
+        protected global::System.Web.UI.WebControls.Panel pnlNotifyList;
+        protected global::System.Web.UI.WebControls.Repeater rptNotifications;
+        protected global::System.Web.UI.WebControls.LinkButton btnLogout;
         protected global::System.Web.UI.WebControls.ContentPlaceHolder MainContent;
         protected global::System.Web.UI.WebControls.ContentPlaceHolder ScriptsContent;
     }
