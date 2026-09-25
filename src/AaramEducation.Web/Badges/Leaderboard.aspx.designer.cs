@@ -10,6 +10,8 @@ namespace AaramEducation.Web.Badges
 {
     public partial class Leaderboard
     {
+        protected global::System.Web.UI.WebControls.Panel pnlUserRank;
+        protected global::System.Web.UI.WebControls.Literal litUserRank;
         protected global::System.Web.UI.WebControls.Repeater rptLeaderboard;
     }
 }

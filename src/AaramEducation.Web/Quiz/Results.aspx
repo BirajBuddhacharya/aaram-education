@@ -1,31 +1,41 @@
 <%@ Page Title="Quiz Results" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Results.aspx.cs" Inherits="AaramEducation.Web.Quiz.QuizResultsPage" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-  <div class="container-xl py-5" style="max-width:700px">
-    <h1 class="t-h2 mb-2">Results</h1>
-    <div class="card p-4 mb-5">
-      <div class="d-flex align-items-center gap-4">
-        <div class="t-h1" style="font-size:3rem"><asp:Literal ID="litScore" runat="server" />%</div>
-        <div>
-          <asp:Label ID="lblStatus" runat="server" CssClass="badge fs-6" />
-          <p class="t-small text-muted mb-0 mt-1"><asp:Literal ID="litDetails" runat="server" /></p>
+<div class="container py-4" style="max-width:800px">
+
+  <h1 class="mb-1">Results</h1>
+
+  <div class="text-center my-4">
+    <div class="display-1 fw-bold"><asp:Literal ID="litScore" runat="server" />%</div>
+    <asp:Label ID="lblStatus" runat="server" CssClass="badge fs-5" />
+    <p class="text-muted mt-2"><asp:Literal ID="litDetails" runat="server" /></p>
+  </div>
+
+  <h5 class="mt-4 mb-3">Question Breakdown</h5>
+
+  <asp:Repeater ID="rptResponses" runat="server">
+    <ItemTemplate>
+      <div class='card mb-3 border-<%# (bool)Eval("IsCorrect") ? "success" : "danger" %>'>
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <p class="fw-semibold mb-2"><%# Server.HtmlEncode((string)Eval("Question.QuestionText")) %></p>
+            <span class="fs-5"><%# (bool)Eval("IsCorrect") ? "&#10003;" : "&#10007;" %></span>
+          </div>
+          <p class="mb-1 small">
+            <span class="text-muted">Your answer:</span>
+            <%# Eval("SelectedOption") != null
+                  ? Server.HtmlEncode((string)Eval("SelectedOption.OptionText"))
+                  : (string.IsNullOrEmpty((string)Eval("TextResponse"))
+                       ? "(no answer)"
+                       : Server.HtmlEncode((string)Eval("TextResponse"))) %>
+          </p>
         </div>
       </div>
-    </div>
+    </ItemTemplate>
+  </asp:Repeater>
 
-    <h2 class="t-h4 mb-3">Question review</h2>
-    <asp:Repeater ID="rptResponses" runat="server">
-      <ItemTemplate>
-        <div class='card p-3 mb-3 border-<%# (bool)Eval("IsCorrect") ? "success" : "danger" %>'>
-          <p class="t-body fw-semibold mb-2"><%# System.Web.HttpUtility.HtmlEncode(Eval("Question.QuestionText")) %></p>
-          <p class="t-small mb-1">Your answer: <strong><%# System.Web.HttpUtility.HtmlEncode(Eval("SelectedOption") != null ? Eval("SelectedOption.OptionText") : Eval("TextAnswer")) %></strong></p>
-          <asp:Label runat="server" Visible='<%# !(bool)Eval("IsCorrect") %>' CssClass="t-small text-success">Correct: <%# System.Web.HttpUtility.HtmlEncode(Eval("Question.CorrectAnswer")) %></asp:Label>
-        </div>
-      </ItemTemplate>
-    </asp:Repeater>
-
-    <div class="mt-4 d-flex gap-2">
-      <asp:HyperLink ID="lnkRetry" runat="server" CssClass="btn btn-outline-primary">Try again</asp:HyperLink>
-      <asp:HyperLink ID="lnkLesson" runat="server" CssClass="btn btn-outline-secondary">Back to lesson</asp:HyperLink>
-    </div>
+  <div class="d-flex gap-3 mt-4">
+    <asp:HyperLink ID="lnkRetry" runat="server" CssClass="btn btn-outline-primary">Retake Quiz</asp:HyperLink>
+    <asp:HyperLink ID="lnkLesson" runat="server" CssClass="btn btn-outline-secondary">Back to Lesson</asp:HyperLink>
   </div>
+</div>
 </asp:Content>

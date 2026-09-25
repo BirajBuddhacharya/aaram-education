@@ -11,11 +11,13 @@ namespace AaramEducation.Web.Lessons
     public partial class Show
     {
         protected global::System.Web.UI.WebControls.Literal litBreadcrumb;
-        protected global::System.Web.UI.WebControls.Literal litTitle;
         protected global::System.Web.UI.WebControls.Literal litMessage;
         protected global::System.Web.UI.WebControls.Panel pnlVideo;
         protected global::System.Web.UI.WebControls.Literal litVideo;
         protected global::System.Web.UI.WebControls.Literal litVideoTitle;
+        protected global::System.Web.UI.WebControls.Literal litTitle;
+        protected global::System.Web.UI.WebControls.HyperLink lnkPrev;
+        protected global::System.Web.UI.WebControls.HyperLink lnkNext;
         protected global::System.Web.UI.WebControls.Panel pnlNote;
         protected global::System.Web.UI.WebControls.Literal litNoteTitle;
         protected global::System.Web.UI.WebControls.Literal litNoteContent;
@@ -24,8 +26,6 @@ namespace AaramEducation.Web.Lessons
         protected global::System.Web.UI.WebControls.Literal litProgressStatus;
         protected global::System.Web.UI.WebControls.Panel pnlQuizzes;
         protected global::System.Web.UI.WebControls.Repeater rptQuizzes;
-        protected global::System.Web.UI.WebControls.HyperLink lnkPrev;
-        protected global::System.Web.UI.WebControls.HyperLink lnkNext;
         protected global::System.Web.UI.WebControls.HyperLink lnkBack;
     }
 }

@@ -13,10 +13,11 @@ namespace AaramEducation.Web.Courses
         protected global::System.Web.UI.WebControls.Content Content1;
         protected global::System.Web.UI.WebControls.Label lblNotFound;
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl courseContent;
-        protected global::System.Web.UI.WebControls.Literal litCourseName;
         protected global::System.Web.UI.WebControls.Literal litSubject;
-        protected global::System.Web.UI.WebControls.Literal litDifficulty;
+        protected global::System.Web.UI.WebControls.Literal litCourseName;
         protected global::System.Web.UI.WebControls.Literal litTutor;
+        protected global::System.Web.UI.WebControls.Literal litDifficulty;
+        protected global::System.Web.UI.WebControls.Repeater rptModules;
         protected global::System.Web.UI.WebControls.Literal litDescription;
         protected global::System.Web.UI.WebControls.Panel pnlEnrolled;
         protected global::System.Web.UI.WebControls.Literal litProgress;
@@ -24,6 +25,5 @@ namespace AaramEducation.Web.Courses
         protected global::System.Web.UI.WebControls.Panel pnlNotEnrolled;
         protected global::System.Web.UI.WebControls.Button btnEnroll;
         protected global::System.Web.UI.WebControls.Panel pnlLoginToEnroll;
-        protected global::System.Web.UI.WebControls.Repeater rptModules;
     }
 }

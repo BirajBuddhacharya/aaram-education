@@ -10,6 +10,8 @@ namespace AaramEducation.Web.Badges
 {
     public partial class Index
     {
+        protected global::System.Web.UI.WebControls.Literal litEarnedCount;
+        protected global::System.Web.UI.WebControls.Literal litTotalCount;
         protected global::System.Web.UI.WebControls.Repeater rptBadges;
     }
 }

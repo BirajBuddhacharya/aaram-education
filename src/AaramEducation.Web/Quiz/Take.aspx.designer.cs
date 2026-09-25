@@ -12,15 +12,16 @@ namespace AaramEducation.Web.Quiz
     {
         protected global::System.Web.UI.WebControls.Content Content1;
         protected global::System.Web.UI.WebControls.Literal litQuizTitle;
-        protected global::System.Web.UI.WebControls.Literal litQNum;
-        protected global::System.Web.UI.WebControls.Literal litQTotal;
         protected global::System.Web.UI.WebControls.HiddenField hfAttemptId;
         protected global::System.Web.UI.WebControls.HiddenField hfQuestionIndex;
         protected global::System.Web.UI.WebControls.HiddenField hfQuizId;
         protected global::System.Web.UI.WebControls.Panel pnlQuestion;
+        protected global::System.Web.UI.WebControls.Literal litQNum;
+        protected global::System.Web.UI.WebControls.Literal litQTotal;
         protected global::System.Web.UI.WebControls.Literal litQuestion;
         protected global::System.Web.UI.WebControls.RadioButtonList rblOptions;
         protected global::System.Web.UI.WebControls.TextBox txtShortAnswer;
         protected global::System.Web.UI.WebControls.Button btnNext;
+        protected global::System.Web.UI.WebControls.Content Content2;
     }
 }

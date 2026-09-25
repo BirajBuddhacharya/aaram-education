@@ -19,8 +19,8 @@ namespace AaramEducation.Web.Tutor
         protected global::System.Web.UI.WebControls.TextBox txtOrder;
         protected global::System.Web.UI.WebControls.CheckBox chkFreeSample;
         protected global::System.Web.UI.WebControls.HiddenField hdnVideoId;
-        protected global::System.Web.UI.WebControls.TextBox txtVideoTitle;
         protected global::System.Web.UI.WebControls.TextBox txtVideoUrl;
+        protected global::System.Web.UI.WebControls.TextBox txtVideoTitle;
         protected global::System.Web.UI.WebControls.HiddenField hdnNoteId;
         protected global::System.Web.UI.WebControls.TextBox txtNoteTitle;
         protected global::System.Web.UI.WebControls.TextBox txtNoteContent;

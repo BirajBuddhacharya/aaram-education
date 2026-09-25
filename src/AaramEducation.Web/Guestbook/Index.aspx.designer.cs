@@ -11,13 +11,13 @@ namespace AaramEducation.Web.Guestbook
     public partial class GuestbookIndexPage
     {
         protected global::System.Web.UI.WebControls.Content Content1;
+        protected global::System.Web.UI.WebControls.Literal litCount;
         protected global::System.Web.UI.WebControls.Label lblSuccess;
+        protected global::System.Web.UI.WebControls.Repeater rptEntries;
         protected global::System.Web.UI.WebControls.Label lblError;
         protected global::System.Web.UI.WebControls.TextBox txtName;
         protected global::System.Web.UI.WebControls.TextBox txtEmail;
         protected global::System.Web.UI.WebControls.TextBox txtMessage;
         protected global::System.Web.UI.WebControls.Button btnSubmit;
-        protected global::System.Web.UI.WebControls.Literal litCount;
-        protected global::System.Web.UI.WebControls.Repeater rptEntries;
     }
 }

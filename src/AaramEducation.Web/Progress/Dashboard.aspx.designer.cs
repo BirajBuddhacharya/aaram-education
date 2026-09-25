@@ -12,8 +12,11 @@ namespace AaramEducation.Web.Progress
     {
         protected global::System.Web.UI.WebControls.Literal litXp;
         protected global::System.Web.UI.WebControls.Literal litStreak;
+        protected global::System.Web.UI.WebControls.Literal litLongestStreak;
         protected global::System.Web.UI.WebControls.Literal litBadges;
         protected global::System.Web.UI.WebControls.Literal litNoCourses;
         protected global::System.Web.UI.WebControls.Repeater rptCourses;
+        protected global::System.Web.UI.WebControls.Repeater rptRecentBadges;
+        protected global::System.Web.UI.WebControls.Repeater rptActivity;
     }
 }

@@ -10,7 +10,7 @@ namespace AaramEducation.Web.Admin
 {
     public partial class GuestbookModerationPage
     {
-        protected global::System.Web.UI.WebControls.Repeater rptPending;
         protected global::System.Web.UI.WebControls.Label lblNone;
+        protected global::System.Web.UI.WebControls.Repeater rptPending;
     }
 }

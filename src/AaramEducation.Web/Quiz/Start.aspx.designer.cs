@@ -10,12 +10,12 @@ namespace AaramEducation.Web.Quiz
 {
     public partial class QuizStartPage
     {
-        protected global::System.Web.UI.WebControls.Literal litMessage;
         protected global::System.Web.UI.WebControls.Literal litTitle;
         protected global::System.Web.UI.WebControls.Literal litDescription;
         protected global::System.Web.UI.WebControls.Literal litPassing;
-        protected global::System.Web.UI.WebControls.Literal litMaxAttempts;
         protected global::System.Web.UI.WebControls.Literal litAttemptsUsed;
+        protected global::System.Web.UI.WebControls.Literal litMaxAttempts;
+        protected global::System.Web.UI.WebControls.Literal litMessage;
         protected global::System.Web.UI.WebControls.Button btnStart;
         protected global::System.Web.UI.WebControls.Panel pnlHistory;
         protected global::System.Web.UI.WebControls.Repeater rptAttempts;

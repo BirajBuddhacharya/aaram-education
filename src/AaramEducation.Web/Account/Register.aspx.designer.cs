@@ -16,7 +16,9 @@ namespace AaramEducation.Web.Account
         protected global::System.Web.UI.WebControls.TextBox txtLastName;
         protected global::System.Web.UI.WebControls.TextBox txtEmail;
         protected global::System.Web.UI.WebControls.TextBox txtPassword;
+        protected global::System.Web.UI.WebControls.TextBox txtConfirmPassword;
         protected global::System.Web.UI.WebControls.DropDownList ddlRole;
         protected global::System.Web.UI.WebControls.Button btnRegister;
+        protected global::System.Web.UI.WebControls.Content Content2;
     }
 }
