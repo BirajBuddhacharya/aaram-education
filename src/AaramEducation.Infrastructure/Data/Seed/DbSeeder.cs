@@ -21,7 +21,7 @@ namespace AaramEducation.Infrastructure.Data.Seed
             var student2 = new User { Email = "student2@aaram.edu", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Student@1234"), FirstName = "Biraj", LastName = "Budhacharya", Role = UserRole.Student, CreatedAt = now, UpdatedAt = now };
             var student3 = new User { Email = "student3@aaram.edu", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Student@1234"), FirstName = "Suprava", LastName = "Maharjan", Role = UserRole.Student, CreatedAt = now, UpdatedAt = now };
 
-            db.Users.AddRange(admin, tutor1, tutor2, student1, student2, student3);
+            db.Users.AddRange(new[] {admin, tutor1, tutor2, student1, student2, student3});
             db.SaveChanges();
 
             var badges = new List<Badge>
@@ -37,12 +37,12 @@ namespace AaramEducation.Infrastructure.Data.Seed
 
             var mathsCourse = new Course { CreatedByUserId = tutor1.UserId, CourseName = "GCSE Mathematics", CourseDescription = "A structured course covering core GCSE Maths topics.", Subject = "Mathematics", DifficultyLevel = "Intermediate", IsPublished = true, CreatedAt = now };
             var computingCourse = new Course { CreatedByUserId = tutor2.UserId, CourseName = "Introduction to Computing", CourseDescription = "Beginner-friendly introduction to programming.", Subject = "Computing", DifficultyLevel = "Beginner", IsPublished = true, CreatedAt = now };
-            db.Courses.AddRange(mathsCourse, computingCourse);
+            db.Courses.AddRange(new[] {mathsCourse, computingCourse});
             db.SaveChanges();
 
             var mathsModule1 = new Module { CourseId = mathsCourse.CourseId, ModuleName = "Numbers & Algebra",      SequenceOrder = 1, CreatedAt = now };
             var mathsModule2 = new Module { CourseId = mathsCourse.CourseId, ModuleName = "Geometry & Measurement", SequenceOrder = 2, CreatedAt = now };
-            db.Modules.AddRange(mathsModule1, mathsModule2);
+            db.Modules.AddRange(new[] {mathsModule1, mathsModule2});
             db.SaveChanges();
 
             var mathsLessons = new List<Lesson>
@@ -59,7 +59,7 @@ namespace AaramEducation.Infrastructure.Data.Seed
 
             var compModule1 = new Module { CourseId = computingCourse.CourseId, ModuleName = "Fundamentals of Programming", SequenceOrder = 1, CreatedAt = now };
             var compModule2 = new Module { CourseId = computingCourse.CourseId, ModuleName = "Data Structures",             SequenceOrder = 2, CreatedAt = now };
-            db.Modules.AddRange(compModule1, compModule2);
+            db.Modules.AddRange(new[] {compModule1, compModule2});
             db.SaveChanges();
 
             var compLessons = new List<Lesson>
@@ -90,33 +90,33 @@ namespace AaramEducation.Infrastructure.Data.Seed
             var q1 = new QuizQuestion { QuizId = quiz.QuizId, QuestionText = "What does a variable represent in algebra?", QuestionType = QuestionType.MultipleChoice, SequenceOrder = 1, PointsValue = 1 };
             db.QuizQuestions.Add(q1);
             db.SaveChanges();
-            db.AnswerOptions.AddRange(
+            db.AnswerOptions.AddRange(new[] {
                 new AnswerOption { QuestionId = q1.QuestionId, OptionText = "A fixed number",    IsCorrect = false, SequenceOrder = 1 },
                 new AnswerOption { QuestionId = q1.QuestionId, OptionText = "An unknown value",  IsCorrect = true,  SequenceOrder = 2 },
                 new AnswerOption { QuestionId = q1.QuestionId, OptionText = "A formula",         IsCorrect = false, SequenceOrder = 3 },
                 new AnswerOption { QuestionId = q1.QuestionId, OptionText = "An equation",       IsCorrect = false, SequenceOrder = 4 }
-            );
+            });
             db.SaveChanges();
 
             var enrollment1 = new Enrollment { StudentId = student1.UserId, CourseId = mathsCourse.CourseId, EnrollmentDate = now.AddDays(-14), EnrollmentStatus = EnrollmentStatus.Active };
             var enrollment2 = new Enrollment { StudentId = student2.UserId, CourseId = mathsCourse.CourseId, EnrollmentDate = now.AddDays(-7),  EnrollmentStatus = EnrollmentStatus.Active };
             var enrollment3 = new Enrollment { StudentId = student3.UserId, CourseId = computingCourse.CourseId, EnrollmentDate = now.AddDays(-5), EnrollmentStatus = EnrollmentStatus.Active };
-            db.Enrollments.AddRange(enrollment1, enrollment2, enrollment3);
+            db.Enrollments.AddRange(new[] {enrollment1, enrollment2, enrollment3});
             db.SaveChanges();
 
-            db.CourseProgresses.AddRange(
+            db.CourseProgresses.AddRange(new[] {
                 new CourseProgress { EnrollmentId = enrollment1.EnrollmentId, Status = ProgressStatus.InProgress, LessonsCompleted = 2, PercentComplete = 33.3f, LastAccessedAt = now.AddDays(-1) },
                 new CourseProgress { EnrollmentId = enrollment2.EnrollmentId, Status = ProgressStatus.NotStarted, LessonsCompleted = 0, PercentComplete = 0f,    LastAccessedAt = now.AddDays(-7) },
                 new CourseProgress { EnrollmentId = enrollment3.EnrollmentId, Status = ProgressStatus.InProgress, LessonsCompleted = 1, PercentComplete = 16.7f, LastAccessedAt = now }
-            );
+            });
             db.SaveChanges();
 
-            db.GuestbookEntries.AddRange(
+            db.GuestbookEntries.AddRange(new[] {
                 new GuestbookEntry { GuestName = "Ayus Yadav",      GuestEmail = "ayus@example.com",   Message = "Aaram Education made revision feel less overwhelming!", SubmittedAt = now.AddDays(-10), ModerationStatus = ModerationStatus.Approved, ModeratedBy = admin.UserId, ModeratedAt = now.AddDays(-9) },
                 new GuestbookEntry { GuestName = "Anita Rai",       GuestEmail = null,                 Message = "I love that I can pick up where I left off.",           SubmittedAt = now.AddDays(-5),  ModerationStatus = ModerationStatus.Approved, ModeratedBy = admin.UserId, ModeratedAt = now.AddDays(-4) },
                 new GuestbookEntry { GuestName = "Marcus Thompson",  GuestEmail = "marcus@example.com", Message = "Finally a platform that respects my time.",             SubmittedAt = now.AddDays(-2),  ModerationStatus = ModerationStatus.Approved, ModeratedBy = admin.UserId, ModeratedAt = now.AddDays(-1) },
                 new GuestbookEntry { GuestName = "Pending User",     GuestEmail = null,                 Message = "Just found this site. Looks promising!",                SubmittedAt = now.AddHours(-1), ModerationStatus = ModerationStatus.Pending }
-            );
+            });
             db.SaveChanges();
         }
     }

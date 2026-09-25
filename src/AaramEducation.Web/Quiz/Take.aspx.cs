@@ -27,7 +27,7 @@ namespace AaramEducation.Web.Quiz
                 var quiz = repo.GetWithQuestionsAsync(quizId).Result;
                 if (quiz == null) { Response.Redirect("~/Quiz/Start.aspx?id=" + quizId); return; }
 
-                _questions = quiz.Questions.OrderBy(q => q.QuestionOrder).ToList();
+                _questions = quiz.Questions.OrderBy(q => q.SequenceOrder).ToList();
                 litQuizTitle.Text = System.Web.HttpUtility.HtmlEncode(quiz.QuizTitle);
                 litQTotal.Text = _questions.Count.ToString();
 
@@ -37,8 +37,8 @@ namespace AaramEducation.Web.Quiz
                     {
                         StudentId = CurrentUserId!.Value,
                         QuizId = quizId,
-                        StartedAt = DateTime.UtcNow,
-                        Status = AttemptStatus.InProgress,
+                        AttemptDate = DateTime.UtcNow,
+                        AttemptStatus = AttemptStatus.InProgress,
                     };
                     db.QuizAttempts.Add(attempt);
                     db.SaveChanges();
@@ -55,7 +55,7 @@ namespace AaramEducation.Web.Quiz
             {
                 var repo = new QuizRepository(db);
                 var quiz = repo.GetWithQuestionsAsync(int.Parse(hfQuizId.Value)).Result;
-                var questions = quiz!.Questions.OrderBy(q => q.QuestionOrder).ToList();
+                var questions = quiz!.Questions.OrderBy(q => q.SequenceOrder).ToList();
                 if (index >= questions.Count) return;
                 var q = questions[index];
                 litQNum.Text = (index + 1).ToString();
@@ -86,7 +86,7 @@ namespace AaramEducation.Web.Quiz
             {
                 var repo = new QuizRepository(db);
                 var quiz = repo.GetWithQuestionsAsync(int.Parse(hfQuizId.Value)).Result;
-                var questions = quiz!.Questions.OrderBy(q => q.QuestionOrder).ToList();
+                var questions = quiz!.Questions.OrderBy(q => q.SequenceOrder).ToList();
 
                 if (index < questions.Count)
                 {
@@ -109,7 +109,7 @@ namespace AaramEducation.Web.Quiz
                     }
                     else
                     {
-                        response.TextAnswer = txtShortAnswer.Text.Trim();
+                        response.TextResponse = txtShortAnswer.Text.Trim();
                         response.IsCorrect = false;
                     }
 
@@ -128,9 +128,9 @@ namespace AaramEducation.Web.Quiz
                         var responses = db.QuestionResponses.Where(r => r.AttemptId == attemptId).ToList();
                         int correct = responses.Count(r => r.IsCorrect);
                         int total = questions.Count;
-                        attempt.CompletedAt = DateTime.UtcNow;
-                        attempt.Score = total == 0 ? 0 : (int)Math.Round((double)correct / total * 100);
-                        attempt.Status = attempt.Score >= quiz.PassingScore ? AttemptStatus.Passed : AttemptStatus.Failed;
+                        attempt.TimeTakenSeconds = (int)(DateTime.UtcNow - attempt.AttemptDate).TotalSeconds;
+                        attempt.ScoreAchieved = total == 0 ? 0 : (int)Math.Round((double)correct / total * 100);
+                        attempt.AttemptStatus = AttemptStatus.Graded;
                         db.Entry(attempt).State = EntityState.Modified;
                         db.SaveChanges();
                     }

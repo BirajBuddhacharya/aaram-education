@@ -24,8 +24,8 @@ namespace AaramEducation.Web.Quiz
 
                 if (attempt == null) { Response.Redirect("~/Courses/Index.aspx"); return; }
 
-                litScore.Text = attempt.Score.ToString();
-                bool passed = attempt.Status == Core.Enums.AttemptStatus.Passed;
+                litScore.Text = attempt.ScoreAchieved.ToString();
+                bool passed = attempt.ScoreAchieved >= attempt.Quiz.PassingScore;
                 lblStatus.Text = passed ? "Passed" : "Failed";
                 lblStatus.CssClass = "badge fs-6 bg-" + (passed ? "success" : "danger");
 
@@ -37,7 +37,7 @@ namespace AaramEducation.Web.Quiz
                 var quizLesson = db.Lessons.FirstOrDefault(l => l.Quizzes.Any(q => q.QuizId == attempt.QuizId));
                 lnkLesson.NavigateUrl = quizLesson != null ? "~/Lessons/Show.aspx?id=" + quizLesson.LessonId : "~/Courses/Index.aspx";
 
-                rptResponses.DataSource = attempt.Responses.OrderBy(r => r.Question.QuestionOrder).ToList();
+                rptResponses.DataSource = attempt.Responses.OrderBy(r => r.Question.SequenceOrder).ToList();
                 rptResponses.DataBind();
             }
         }

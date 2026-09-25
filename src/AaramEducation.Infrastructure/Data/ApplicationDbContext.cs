@@ -3,12 +3,11 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using AaramEducation.Core.Entities;
-using MySql.Data.Entity;
-
-[assembly: DbConfigurationType(typeof(MySqlEFConfiguration))]
+using MySql.Data.EntityFramework;
 
 namespace AaramEducation.Infrastructure.Data
 {
+    [DbConfigurationType(typeof(MySqlEFConfiguration))]
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext() : base("name=DefaultConnection") { }
@@ -84,8 +83,13 @@ namespace AaramEducation.Infrastructure.Data
             mb.Entity<Enrollment>().HasRequired(e => e.Course).WithMany(c => c.Enrollments).HasForeignKey(e => e.CourseId).WillCascadeOnDelete(false);
 
             // COURSE PROGRESS
-            mb.Entity<CourseProgress>().HasKey(cp => cp.CourseProgressId).ToTable("CourseProgresses");
-            mb.Entity<CourseProgress>().HasRequired(cp => cp.Enrollment).WithOptionalDependent(e => e.CourseProgress).WillCascadeOnDelete(true);
+            // EF6 requires the dependent of a 1:0..1 to use its foreign key as its own
+            // primary key, so EnrollmentId is the key; CourseProgressId is left as a
+            // plain column. The key is assigned, never store-generated.
+            mb.Entity<CourseProgress>().HasKey(cp => cp.EnrollmentId).ToTable("CourseProgresses");
+            mb.Entity<CourseProgress>().Property(cp => cp.EnrollmentId)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
+            mb.Entity<CourseProgress>().HasRequired(cp => cp.Enrollment).WithOptional(e => e.CourseProgress).WillCascadeOnDelete(true);
 
             // MODULE PROGRESS
             mb.Entity<ModuleProgress>().HasKey(mp => mp.ModuleProgressId).ToTable("ModuleProgresses");

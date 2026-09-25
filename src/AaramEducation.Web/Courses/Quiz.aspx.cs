@@ -72,9 +72,7 @@ namespace AaramEducation.Web.Courses
                     ? "<span class=\"text-success fw-semibold\">Passed!</span>"
                     : "<span class=\"text-danger\">Not passed. Review the material and try again.</span>";
 
-                aBack.HRef = quiz.LessonId.HasValue
-                    ? "~/Courses/Lesson.aspx?lessonId=" + quiz.LessonId.Value
-                    : "~/Courses/Index.aspx";
+                aBack.HRef = "~/Courses/Lesson.aspx?lessonId=" + quiz.LessonId;
 
                 new BadgeRepository(db).CheckAndAwardAsync(CurrentUserId!.Value).Wait();
             }
