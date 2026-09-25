@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using AaramEducation.Infrastructure.Data;
 using AaramEducation.Infrastructure.Repositories;
-using AaramEducation.Web.App_Code;
+using AaramEducation.Web.Helpers;
 
 namespace AaramEducation.Web.Courses
 {

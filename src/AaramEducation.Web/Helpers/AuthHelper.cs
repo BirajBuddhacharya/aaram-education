@@ -2,7 +2,7 @@ using System;
 using System.Web;
 using System.Web.Security;
 
-namespace AaramEducation.Web.App_Code
+namespace AaramEducation.Web.Helpers
 {
     // Ticket UserData: "{userId}|{role}|{firstName}|{lastName}"
     public static class AuthHelper

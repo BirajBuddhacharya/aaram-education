@@ -10,13 +10,13 @@ namespace AaramEducation.Web
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            IsAuthenticated = App_Code.AuthHelper.IsAuthenticated();
-            CurrentUserRole = App_Code.AuthHelper.GetCurrentUserRole();
+            IsAuthenticated = Helpers.AuthHelper.IsAuthenticated();
+            CurrentUserRole = Helpers.AuthHelper.GetCurrentUserRole();
         }
 
         protected void Logout_Click(object sender, EventArgs e)
         {
-            App_Code.AuthHelper.SignOut();
+            Helpers.AuthHelper.SignOut();
             Response.Redirect("~/Default.aspx");
         }
     }

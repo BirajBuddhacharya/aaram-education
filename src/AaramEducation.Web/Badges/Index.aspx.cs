@@ -4,7 +4,7 @@ using System.Linq;
 using AaramEducation.Core.Entities;
 using AaramEducation.Infrastructure.Data;
 using AaramEducation.Infrastructure.Repositories;
-using AaramEducation.Web.App_Code;
+using AaramEducation.Web.Helpers;
 
 namespace AaramEducation.Web.Badges
 {

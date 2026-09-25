@@ -1,6 +1,6 @@
 using System.Web.UI;
 
-namespace AaramEducation.Web.App_Code
+namespace AaramEducation.Web.Helpers
 {
     public class BasePage : Page
     {
